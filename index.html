@@ -1,0 +1,533 @@
+
+<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg0)}
+input,button{font-family:var(--fn)}
+input{font-size:13px;background:var(--bg2);border:1px solid var(--bd2);color:var(--t1);padding:0 10px;height:36px;border-radius:var(--r);width:100%;transition:border .15s,box-shadow .15s}
+input::placeholder{color:var(--t3)}
+input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-bg)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.pb{background:#2563EB;color:#fff;border:none;padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;transition:background .15s;white-space:nowrap}
+.pb:hover{background:#1D4ED8}
+.pb:disabled{opacity:.4;cursor:default}
+.sb{background:transparent;border:1px solid var(--bd2);color:var(--t2);padding:7px 14px;border-radius:var(--r);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sb:hover{color:var(--t1);border-color:var(--ac-bd)}
+.thbtn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--r);color:var(--t2);font-size:12px;cursor:pointer;transition:all .15s}
+.thbtn:hover{color:var(--t1)}
+.qb:hover{color:var(--qtc)!important;border-color:var(--qbc)!important}
+.tr:hover{background:var(--bg2)!important}
+.mn:hover{background:var(--bg2)!important}
+.pi:hover{background:var(--bg2)!important;border-color:var(--bd2)!important}
+.tab:hover{color:var(--ac)!important}
+[data-theme=light]{
+  --bg0:#E9ECF2;--bg1:#FFFFFF;--bg2:#F5F6FA;
+  --t1:#0F1117;--t2:#52566A;--t3:#9EA4B6;
+  --bd:rgba(0,0,0,.08);--bd2:rgba(0,0,0,.15);
+  --fn:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mo:'SF Mono',Consolas,Monaco,'Courier New',monospace;
+  --r:7px;
+  --ac:#1D4ED8;--ac-bg:#EFF6FF;--ac-bd:#BFDBFE;
+  --pr:#6D28D9;--pr-bg:#EDE9FE;--pr-bd:#C4B5FD;
+  --su:#047857;--su-bg:#ECFDF5;--su-bd:#6EE7B7;
+  --wa:#92400E;--wa-bg:#FFFBEB;--wa-bd:#FDE68A;
+  --da:#B91C1C;--da-bg:#FEF2F2;--da-bd:#FECACA;
+}
+[data-theme=dark]{
+  --bg0:#0D0F14;--bg1:#161820;--bg2:#1D2029;
+  --t1:#ECEEF6;--t2:#878CA0;--t3:#484E64;
+  --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);
+  --ac:#60A5FA;--ac-bg:#182035;--ac-bd:#1E3A8A;
+  --pr:#A78BFA;--pr-bg:#1E1B38;--pr-bd:#4C1D95;
+  --su:#34D399;--su-bg:#0A231A;--su-bd:#064E3B;
+  --wa:#FCD34D;--wa-bg:#231B08;--wa-bd:#78350F;
+  --da:#F87171;--da-bg:#210D0D;--da-bd:#7F1D1D;
+}
+</style>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const{useState,useEffect,useRef,useCallback}=React;
+const h=React.createElement;
+
+const RL=[
+  {t:"var(--ac)",bg:"var(--ac-bg)",b:"var(--ac-bd)"},
+  {t:"var(--pr)",bg:"var(--pr-bg)",b:"var(--pr-bd)"},
+  {t:"var(--su)",bg:"var(--su-bg)",b:"var(--su-bd)"},
+  {t:"var(--wa)",bg:"var(--wa-bg)",b:"var(--wa-bd)"},
+  {t:"var(--da)",bg:"var(--da-bg)",b:"var(--da-bd)"},
+  {t:"var(--pr)",bg:"var(--pr-bg)",b:"var(--pr-bd)"},
+];
+
+// Date helpers
+function fmtDate(str){
+  const d=new Date(str+"T00:00:00");
+  return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+function fmtRange(s,e){
+  const ds=new Date(s+"T00:00:00"),de=new Date(e+"T00:00:00");
+  const ms=ds.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  const me=de.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  return ms+" – "+me;
+}
+function getDue(dueStr,isDone){
+  if(isDone)return{color:"var(--su)",label:"done",icon:"ti-circle-check"};
+  const due=new Date(dueStr+"T00:00:00");
+  const today=new Date();today.setHours(0,0,0,0);
+  const diff=Math.ceil((due-today)/86400000);
+  if(diff<0)return{color:"var(--da)",label:`${-diff}d late`,icon:"ti-alert-circle"};
+  if(diff===0)return{color:"var(--wa)",label:"due today",icon:"ti-clock-exclamation"};
+  if(diff<=7)return{color:"var(--wa)",label:`${diff}d left`,icon:"ti-clock"};
+  return{color:"var(--t3)",label:`${diff}d left`,icon:"ti-calendar"};
+}
+
+const MO=[
+  {id:1,title:"Foundations",goal:"Build the mental model before touching tools",
+   start:"2026-07-11",end:"2026-08-10",
+   tasks:[
+    {id:"1-1",due:"2026-07-15",text:"Read FDE cover to cover — take notes on the data lifecycle stages",tag:"Reading"},
+    {id:"1-2",due:"2026-07-19",text:"Understand all FDE undercurrents: security, DataOps, orchestration, data management",tag:"Reading"},
+    {id:"1-3",due:"2026-07-22",text:"SQL: window functions — ROW_NUMBER, RANK, LAG/LEAD, PARTITION BY",tag:"SQL"},
+    {id:"1-4",due:"2026-07-25",text:"SQL: CTEs and recursive CTEs",tag:"SQL"},
+    {id:"1-5",due:"2026-07-28",text:"SQL: learn to read query execution plans (EXPLAIN output)",tag:"SQL"},
+    {id:"1-6",due:"2026-08-04",text:"Dimensional modeling: star schema, SCDs, fact vs dimension tables",tag:"Modeling"},
+    {id:"1-7",due:"2026-08-10",text:"Understand and explain OLTP vs OLAP design differences",tag:"Modeling"},
+   ],
+   ms:"You can explain the difference between a data lake, data warehouse, and lakehouse — and why each exists.",
+   qz:["Data lifecycle stages","SQL window functions","Dimensional modeling","OLTP vs OLAP"]},
+  {id:2,title:"Core tooling",goal:"Get hands dirty with the actual stack",
+   start:"2026-08-11",end:"2026-09-10",
+   tasks:[
+    {id:"2-1",due:"2026-08-14",text:"Python for DE: pandas and polars for data manipulation",tag:"Python"},
+    {id:"2-2",due:"2026-08-17",text:"Read and write Parquet files (not just CSV)",tag:"Python"},
+    {id:"2-3",due:"2026-08-21",text:"Build a Python script hitting a REST API with pagination and error handling",tag:"Python"},
+    {id:"2-4",due:"2026-08-24",text:"Complete dbt Fundamentals free course on dbt Learn",tag:"dbt"},
+    {id:"2-5",due:"2026-08-28",text:"Complete dbt Jinja/Macros free course on dbt Learn",tag:"dbt"},
+    {id:"2-6",due:"2026-09-01",text:"Set up dbt locally against DuckDB or Postgres",tag:"dbt"},
+    {id:"2-7",due:"2026-09-05",text:"Build a multi-model dbt project with sources, tests, and docs",tag:"dbt"},
+    {id:"2-8",due:"2026-09-08",text:"Set up Azure free-tier and get comfortable with ADLS Gen2",tag:"Azure"},
+    {id:"2-9",due:"2026-09-10",text:"Create a basic Azure Data Factory copy pipeline",tag:"Azure"},
+   ],
+   ms:"You have dbt running locally and can build a multi-model transformation from a raw CSV source.",
+   qz:["Parquet vs CSV","dbt core concepts","dbt ref() and sources","Azure ADLS Gen2"]},
+  {id:3,title:"Pipeline thinking",goal:"Connect the pieces end to end",
+   start:"2026-09-11",end:"2026-10-10",
+   tasks:[
+    {id:"3-1",due:"2026-09-14",text:"DDIA: read Part 1 — reliable, scalable, maintainable systems",tag:"Reading"},
+    {id:"3-2",due:"2026-09-17",text:"DDIA: storage engines chapter",tag:"Reading"},
+    {id:"3-3",due:"2026-09-21",text:"DDIA: replication chapter",tag:"Reading"},
+    {id:"3-4",due:"2026-09-24",text:"Set up Airflow or Prefect locally via Docker",tag:"Orchestration"},
+    {id:"3-5",due:"2026-09-28",text:"Build a DAG: API → storage → dbt run",tag:"Orchestration"},
+    {id:"3-6",due:"2026-10-02",text:"Add retry logic and failure alerting to the DAG",tag:"Orchestration"},
+    {id:"3-7",due:"2026-10-06",text:"Start DataTalks.Club DE Zoomcamp — Docker and Terraform modules",tag:"Course"},
+    {id:"3-8",due:"2026-10-10",text:"Complete Zoomcamp GCP/BigQuery module",tag:"Course"},
+   ],
+   ms:"A pipeline runs on a schedule, ingests real data, transforms with dbt, and doesn't fail silently.",
+   qz:["DDIA storage engines","Airflow DAG concepts","Pipeline reliability","Orchestration fundamentals"]},
+  {id:4,title:"Portfolio project",goal:"Build the thing you'll talk about in interviews",
+   start:"2026-10-11",end:"2026-11-10",
+   tasks:[
+    {id:"4-1",due:"2026-10-14",text:"Choose a data source and design the project scope",tag:"Design"},
+    {id:"4-2",due:"2026-10-18",text:"Ingest: pull from a public API on a schedule",tag:"Build"},
+    {id:"4-3",due:"2026-10-22",text:"Store: land raw data in ADLS Gen2 as Parquet, partitioned by date",tag:"Build"},
+    {id:"4-4",due:"2026-10-26",text:"Transform: model with dbt into fact and dimension tables",tag:"Build"},
+    {id:"4-5",due:"2026-10-30",text:"Orchestrate: Airflow DAG with retries and alerting",tag:"Build"},
+    {id:"4-6",due:"2026-11-03",text:"Serve: build a simple dashboard in Metabase or Jupyter",tag:"Build"},
+    {id:"4-7",due:"2026-11-07",text:"Write README with architecture diagram and design decisions",tag:"Docs"},
+    {id:"4-8",due:"2026-11-10",text:"Publish to GitHub with clean commit history",tag:"Docs"},
+   ],
+   ms:"You can walk someone through the project end to end and explain every design decision.",
+   qz:["Data lake partitioning","dbt project structure","Pipeline design trade-offs","Data modeling for analytics"]},
+  {id:5,title:"Depth + Spark",goal:"Handle the scale questions",
+   start:"2026-11-11",end:"2026-12-10",
+   tasks:[
+    {id:"5-1",due:"2026-11-14",text:"PySpark: understand RDDs vs DataFrames vs Datasets conceptually",tag:"Spark"},
+    {id:"5-2",due:"2026-11-18",text:"PySpark: understand partitioning and shuffles — why they hurt performance",tag:"Spark"},
+    {id:"5-3",due:"2026-11-22",text:"Run a Spark job on Databricks Community Edition (free tier)",tag:"Spark"},
+    {id:"5-4",due:"2026-11-26",text:"DDIA: encoding and evolution chapter",tag:"Reading"},
+    {id:"5-5",due:"2026-11-30",text:"DDIA: stream processing chapter",tag:"Reading"},
+    {id:"5-6",due:"2026-12-04",text:"DDIA: distributed transactions chapter",tag:"Reading"},
+    {id:"5-7",due:"2026-12-07",text:"Study for DP-900 (Azure Data Fundamentals) as a warmup",tag:"Cert"},
+    {id:"5-8",due:"2026-12-10",text:"Start DP-203 (Data Engineering on Azure) study guide",tag:"Cert"},
+   ],
+   ms:"You can explain what happens when a Spark join causes a shuffle, and why you'd avoid it.",
+   qz:["Spark shuffles and partitioning","DDIA distributed concepts","Stream vs batch processing","Azure DP-203 topics"]},
+  {id:6,title:"Job readiness",goal:"Translate skills into opportunities",
+   start:"2026-12-11",end:"2027-01-10",
+   tasks:[
+    {id:"6-1",due:"2026-12-15",text:"Practice SQL on DataLemur — complete 20+ DE-specific problems",tag:"Interview"},
+    {id:"6-2",due:"2026-12-19",text:"Practice walking through your portfolio project out loud (10+ times)",tag:"Interview"},
+    {id:"6-3",due:"2026-12-22",text:"Prepare 'How would this scale to 10x?' for every design decision",tag:"Interview"},
+    {id:"6-4",due:"2026-12-26",text:"Add data quality checks to portfolio using Great Expectations",tag:"Extend"},
+    {id:"6-5",due:"2027-01-02",text:"Add CI/CD to your dbt project using GitHub Actions",tag:"Extend"},
+    {id:"6-6",due:"2027-01-05",text:"Add Terraform IaC to provision your Azure resources",tag:"Extend"},
+    {id:"6-7",due:"2027-01-08",text:"Apply to 10+ DE, analytics engineer, or data platform roles",tag:"Apply"},
+    {id:"6-8",due:"2027-01-10",text:"Post about your project on LinkedIn",tag:"Apply"},
+   ],
+   ms:"Portfolio published, DP-203 passed, and 10+ applications submitted.",
+   qz:["DE system design","Data quality and testing","CI/CD for data pipelines","Terraform for data infra"]},
+];
+
+async function callClaude(msgs,sys){
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:sys,messages:msgs})});
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.content?.[0]?.text||"";
+}
+async function ls(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null;}catch{return null;}}
+async function ss(k,v){try{await window.storage.set(k,JSON.stringify(v));}catch{}}
+
+function pct(mid,dn){const m=MO.find(x=>x.id===mid);if(!m)return 0;return Math.round(m.tasks.filter(t=>dn[t.id]).length/m.tasks.length*100);}
+function getCur(dn){for(let i=MO.length-1;i>=0;i--)if(pct(MO[i].id,dn)>0)return i;return 0;}
+
+function App(){
+  const[theme,setTheme]=useState("light");
+  const[tab,setTab]=useState("dashboard");
+  const[dn,setDn]=useState({});
+  const[selM,setSelM]=useState(0);
+  const[quiz,setQuiz]=useState(null);
+  const[qLoad,setQL]=useState(false);
+  const[qH,setQH]=useState([]);
+  const[msgs,setMsgs]=useState([]);
+  const[inp,setInp]=useState("");
+  const[cLoad,setCL]=useState(false);
+  const[rdy,setRdy]=useState(false);
+  const endR=useRef(null);
+
+  useEffect(()=>{
+    (async()=>{
+      const[p,h2,th]=await Promise.all([ls("de_prog"),ls("de_qhist"),ls("de_theme")]);
+      if(p)setDn(p);
+      if(h2)setQH(h2);
+      const t=th||(window.matchMedia?.("(prefers-color-scheme:dark)").matches?"dark":"light");
+      setTheme(t);setRdy(true);
+    })();
+  },[]);
+
+  useEffect(()=>{endR.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
+  const toggle=useCallback(async(id)=>{setDn(prev=>{const n={...prev,[id]:!prev[id]};ss("de_prog",n);return n;});},[]);
+  const toggleTheme=()=>{setTheme(t=>{const n=t==="dark"?"light":"dark";ss("de_theme",n);return n;});};
+
+  const curI=getCur(dn);
+  const cm=MO[curI],cr=RL[curI];
+  const tot=MO.reduce((a,m)=>a+m.tasks.length,0);
+  const dnN=Object.values(dn).filter(Boolean).length;
+  const ov=Math.round(dnN/tot*100);
+
+  // Next upcoming deadline (not done, earliest)
+  const nextDl=MO.flatMap(m=>m.tasks.filter(t=>!dn[t.id])).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
+
+  async function startQ(topic,mi){
+    setQL(true);setQuiz(null);
+    const m=MO[mi];
+    try{
+      const txt=await callClaude(
+        [{role:"user",content:`Quiz on "${topic}" for SWE→DE learner, month ${mi+1} (${m.title}). Return ONLY valid JSON:\n{"question":"...","options":{"a":"...","b":"...","c":"...","d":"..."},"correct":"a","explanation":"..."}`}],
+        "Return ONLY valid JSON. No markdown, no code fences, no preamble."
+      );
+      const p=JSON.parse(txt.replace(/```json|```/g,"").trim());
+      setQuiz({...p,topic,mi,sel:null,rev:false});
+    }catch{setQuiz({err:true});}
+    setQL(false);
+  }
+
+  async function ans(k){
+    if(!quiz||quiz.rev)return;
+    const ok=k===quiz.correct;
+    setQH(prev=>{const n=[{topic:quiz.topic,mi:quiz.mi,ok,ts:Date.now()},...prev].slice(0,50);ss("de_qhist",n);return n;});
+    setQuiz(q=>({...q,sel:k,rev:true}));
+  }
+
+  async function send(){
+    if(!inp.trim()||cLoad)return;
+    const um={role:"user",content:inp.trim()};
+    const nxt=[...msgs,um];setMsgs(nxt);setInp("");setCL(true);
+    const dl=MO.flatMap(m=>m.tasks.filter(t=>dn[t.id]).map(t=>t.text));
+    const sys=`You are Marko's DE mentor. He's a SWE transitioning to DE, month ${curI+1}/6 (${cm.title}). ${dnN}/${tot} tasks done. Recent: ${dl.slice(-4).join("; ")||"none"}. 6-month plan ends Jan 10 2027. Be direct, technical, max 3 short paragraphs.`;
+    try{const txt=await callClaude(nxt,sys);setMsgs(m=>[...m,{role:"assistant",content:txt}]);}
+    catch{setMsgs(m=>[...m,{role:"assistant",content:"Connection error — try again."}]);}
+    setCL(false);
+  }
+
+  if(!rdy)return h("div",{style:{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--t3)",fontFamily:"var(--fn)",background:"var(--bg0)"}},"Loading…");
+
+  const TABS=[{id:"dashboard",ic:"ti-layout-dashboard",lb:"Dashboard"},{id:"tasks",ic:"ti-checklist",lb:"Tasks"},{id:"quiz",ic:"ti-brain",lb:"Quiz"},{id:"mentor",ic:"ti-message-2",lb:"Mentor"}];
+
+  return h("div",{"data-theme":theme,style:{background:"var(--bg0)",minHeight:"100vh",fontFamily:"var(--fn)",color:"var(--t1)",transition:"background .25s,color .25s"}},
+    h("h2",{className:"sr-only"},"DE transition tracker — 6-month SWE to Data Engineer learning path"),
+
+    // HEADER
+    h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 20px",background:"var(--bg1)",borderBottom:"1px solid var(--bd)",position:"sticky",top:0,zIndex:10}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:10}},
+        h("i",{className:"ti ti-database","aria-hidden":"true",style:{fontSize:17,color:"var(--ac)"}}),
+        h("span",{style:{fontWeight:500,fontSize:15}},"DE transition tracker"),
+        h("span",{style:{fontSize:11,color:"var(--t3)",fontFamily:"var(--mo)"}},"SWE → DE")
+      ),
+      h("div",{style:{display:"flex",alignItems:"center",gap:10}},
+        h("div",{style:{display:"flex",alignItems:"center",gap:6}},
+          h("div",{style:{width:88,height:4,background:"var(--bd2)",borderRadius:4,overflow:"hidden"}},
+            h("div",{style:{width:`${ov}%`,height:"100%",background:"#2563EB",borderRadius:4,transition:"width .3s"}})
+          ),
+          h("span",{style:{fontSize:11,color:"var(--t2)",fontFamily:"var(--mo)"}},ov+"%")
+        ),
+        h("button",{className:"thbtn",onClick:toggleTheme,title:theme==="dark"?"Light mode":"Dark mode"},
+          h("i",{className:`ti ${theme==="dark"?"ti-sun":"ti-moon"}`,"aria-hidden":"true",style:{fontSize:13}}),
+          theme==="dark"?"Light":"Dark"
+        )
+      )
+    ),
+
+    // TABS
+    h("div",{style:{display:"flex",borderBottom:"1px solid var(--bd)",padding:"0 20px",background:"var(--bg1)"}},
+      TABS.map(t=>h("button",{key:t.id,className:"tab",onClick:()=>setTab(t.id),style:{
+        display:"flex",alignItems:"center",gap:6,padding:"10px 14px",border:"none",background:"transparent",cursor:"pointer",
+        color:tab===t.id?"var(--ac)":"var(--t2)",borderBottom:`2px solid ${tab===t.id?"var(--ac)":"transparent"}`,
+        fontSize:13,fontWeight:tab===t.id?500:400,fontFamily:"var(--fn)",transition:"color .15s"
+      }},h("i",{className:`ti ${t.ic}`,"aria-hidden":"true",style:{fontSize:14}}),t.lb))
+    ),
+
+    // CONTENT
+    h("div",{style:{padding:"20px",maxWidth:860,margin:"0 auto"}},
+
+      // ── DASHBOARD ──
+      tab==="dashboard"&&h("div",null,
+        // Pipeline
+        h("div",{style:{marginBottom:20}},
+          h("p",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mo)",textTransform:"uppercase",letterSpacing:2,margin:"0 0 10px"}},"6-month pipeline · Jul 11, 2026 – Jan 10, 2027"),
+          h("div",{style:{display:"flex",alignItems:"stretch",overflowX:"auto",paddingBottom:4}},
+            MO.map((mn,i)=>{
+              const p=pct(mn.id,dn);const c=RL[i];const isA=i===curI;
+              const today=new Date();today.setHours(0,0,0,0);
+              const mEnd=new Date(mn.end+"T00:00:00");
+              const dLeft=Math.ceil((mEnd-today)/86400000);
+              return h("div",{key:mn.id,style:{display:"flex",alignItems:"center",flex:1,minWidth:95}},
+                h("button",{onClick:()=>{setSelM(i);setTab("tasks");},style:{
+                  flex:1,padding:"10px 8px",background:isA?c.bg:"var(--bg1)",
+                  border:`1px solid ${isA?c.b:"var(--bd)"}`,borderRadius:"var(--r)",
+                  cursor:"pointer",textAlign:"left",fontFamily:"var(--fn)",transition:"all .2s"
+                }},
+                  h("div",{style:{fontSize:9,color:c.t,fontFamily:"var(--mo)",marginBottom:2}},(p===100?"✓ ":"")+"M"+mn.id),
+                  h("div",{style:{fontSize:11,fontWeight:500,color:"var(--t1)",marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},mn.title),
+                  h("div",{style:{fontSize:9,color:"var(--t3)",marginBottom:4,fontFamily:"var(--mo)",whiteSpace:"nowrap"}},fmtRange(mn.start,mn.end)),
+                  h("div",{style:{height:3,background:"var(--bd2)",borderRadius:2,overflow:"hidden"}},
+                    h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:2,transition:"width .4s"}})
+                  ),
+                  h("div",{style:{fontSize:9,color:"var(--t3)",marginTop:3,fontFamily:"var(--mo)"}},p+"%")
+                ),
+                i<MO.length-1&&h("i",{className:"ti ti-arrow-right","aria-hidden":"true",style:{fontSize:11,color:"var(--t3)",flexShrink:0,margin:"0 2px"}})
+              );
+            })
+          )
+        ),
+
+        // Stats row
+        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:10,marginBottom:16}},
+          [
+            {lb:"Tasks done",val:`${dnN}/${tot}`,col:"var(--ac)"},
+            {lb:"Current month",val:`Month ${curI+1}`,col:cr.t},
+            {lb:"Next deadline",val:nextDl?fmtDate(nextDl.due):"All done!",col:nextDl?getDue(nextDl.due,false).color:"var(--su)"}
+          ].map(s=>h("div",{key:s.lb,style:{background:"var(--bg1)",borderRadius:"var(--r)",border:"1px solid var(--bd)",padding:"14px 16px"}},
+            h("p",{style:{fontSize:11,color:"var(--t2)",margin:"0 0 4px"}},s.lb),
+            h("p",{style:{fontSize:20,fontWeight:500,color:s.col,margin:0,fontFamily:"var(--mo)"}},s.val)
+          ))
+        ),
+
+        // Current month card
+        h("div",{style:{background:"var(--bg1)",border:`1px solid ${cr.b}`,borderRadius:10,padding:18}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:3}},
+            h("p",{style:{fontSize:10,color:"var(--t3)",margin:0,textTransform:"uppercase",letterSpacing:1}},"Currently working on"),
+            h("span",{style:{fontSize:11,color:"var(--t3)",fontFamily:"var(--mo)"}},fmtRange(cm.start,cm.end))
+          ),
+          h("p",{style:{fontSize:16,fontWeight:500,color:cr.t,margin:"4px 0 3px"}},`Month ${curI+1}: ${cm.title}`),
+          h("p",{style:{fontSize:13,color:"var(--t2)",margin:"0 0 14px"}},cm.goal),
+          h("div",{style:{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:"var(--r)",padding:"11px 14px",marginBottom:14}},
+            h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 4px",textTransform:"uppercase",letterSpacing:1}},"Milestone"),
+            h("p",{style:{fontSize:13,color:"var(--t1)",margin:0,lineHeight:1.6}},cm.ms)
+          ),
+          // Next tasks
+          h("div",{style:{marginBottom:14}},
+            h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 8px",textTransform:"uppercase",letterSpacing:1}},"Up next"),
+            cm.tasks.filter(t=>!dn[t.id]).slice(0,2).map(t=>{
+              const ds=getDue(t.due,false);
+              return h("div",{key:t.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:"1px solid var(--bd)"}},
+                h("span",{style:{fontSize:12,color:"var(--t1)",flex:1,paddingRight:10}},t.text),
+                h("span",{style:{fontSize:11,color:ds.color,fontFamily:"var(--mo)",flexShrink:0}},fmtDate(t.due))
+              );
+            })
+          ),
+          h("div",{style:{display:"flex",gap:8,flexWrap:"wrap"}},
+            h("button",{className:"pb",onClick:()=>{setSelM(curI);setTab("tasks");}},"View tasks"),
+            h("button",{className:"sb",onClick:()=>setTab("quiz")},"Quiz me"),
+            h("button",{className:"sb",onClick:()=>setTab("mentor")},"Ask mentor")
+          )
+        )
+      ),
+
+      // ── TASKS ──
+      tab==="tasks"&&h("div",{style:{display:"grid",gridTemplateColumns:"165px minmax(0,1fr)",gap:18}},
+        h("div",null,
+          MO.map((mn,i)=>{
+            const p=pct(mn.id,dn);const c=RL[i];
+            const overdue=mn.tasks.filter(t=>!dn[t.id]&&getDue(t.due,false).label.includes("late")).length;
+            return h("button",{key:mn.id,className:"mn",onClick:()=>setSelM(i),style:{
+              width:"100%",textAlign:"left",padding:"8px 10px",borderRadius:"var(--r)",marginBottom:3,
+              background:selM===i?c.bg:"transparent",border:`1px solid ${selM===i?c.b:"transparent"}`,
+              cursor:"pointer",fontFamily:"var(--fn)",transition:"all .15s"
+            }},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+                h("div",{style:{fontSize:9,color:c.t,fontFamily:"var(--mo)"}},`M${mn.id} · ${p}%`),
+                overdue>0&&h("span",{style:{fontSize:9,color:"var(--da)",fontFamily:"var(--mo)"}},overdue+"!")
+              ),
+              h("div",{style:{fontSize:12,fontWeight:selM===i?500:400,color:selM===i?"var(--t1)":"var(--t2)",marginTop:2}},mn.title),
+              h("div",{style:{fontSize:9,color:"var(--t3)",marginTop:1}},fmtRange(mn.start,mn.end))
+            );
+          })
+        ),
+        (()=>{
+          const mn=MO[selM];const p=pct(mn.id,dn);const c=RL[selM];
+          const d2=mn.tasks.filter(t=>dn[t.id]).length;
+          const overdue=mn.tasks.filter(t=>!dn[t.id]&&getDue(t.due,false).label.includes("late")).length;
+          return h("div",null,
+            h("div",{style:{marginBottom:14}},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}},
+                h("div",null,
+                  h("p",{style:{fontSize:15,fontWeight:500,color:c.t,margin:"0 0 1px"}},mn.title),
+                  h("p",{style:{fontSize:11,color:"var(--t3)",margin:0,fontFamily:"var(--mo)"}},fmtRange(mn.start,mn.end)),
+                  h("p",{style:{fontSize:12,color:"var(--t2)",margin:"3px 0 0"}},mn.goal)
+                ),
+                h("div",{style:{textAlign:"right"}},
+                  h("span",{style:{fontFamily:"var(--mo)",fontSize:14,fontWeight:500,color:c.t}},`${d2}/${mn.tasks.length}`),
+                  overdue>0&&h("div",{style:{fontSize:10,color:"var(--da)",fontFamily:"var(--mo)",marginTop:2}},overdue+" overdue")
+                )
+              ),
+              h("div",{style:{height:4,background:"var(--bd2)",borderRadius:4,overflow:"hidden",marginTop:10}},
+                h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:4,transition:"width .4s"}})
+              )
+            ),
+            h("div",{style:{marginBottom:14}},
+              mn.tasks.map(task=>{
+                const isDn=dn[task.id];
+                const ds=getDue(task.due,isDn);
+                return h("div",{key:task.id,className:"tr",onClick:()=>toggle(task.id),style:{
+                  display:"flex",alignItems:"flex-start",gap:10,padding:"10px",borderRadius:"var(--r)",marginBottom:3,
+                  cursor:"pointer",background:isDn?"var(--bg2)":"var(--bg1)",
+                  border:`1px solid ${isDn?c.b:ds.label.includes("late")?"var(--da-bd)":"var(--bd)"}`,
+                  transition:"all .15s",userSelect:"none"
+                }},
+                  h("div",{style:{width:15,height:15,borderRadius:3,border:`1.5px solid ${isDn?c.t:"var(--bd2)"}`,background:isDn?c.t:"transparent",flexShrink:0,marginTop:2,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}},
+                    isDn&&h("i",{className:"ti ti-check","aria-hidden":"true",style:{fontSize:9,color:"#fff"}})
+                  ),
+                  h("div",{style:{flex:1,minWidth:0}},
+                    h("p",{style:{fontSize:13,color:isDn?"var(--t3)":"var(--t1)",textDecoration:isDn?"line-through":"none",margin:"0 0 4px",lineHeight:1.5}},task.text),
+                    h("span",{style:{fontSize:10,color:"var(--t3)",background:"var(--bg2)",border:"1px solid var(--bd)",padding:"1px 6px",borderRadius:4}},task.tag)
+                  ),
+                  h("div",{style:{flexShrink:0,textAlign:"right",marginLeft:8}},
+                    h("div",{style:{fontSize:11,color:ds.color,fontFamily:"var(--mo)",fontWeight:500}},fmtDate(task.due)),
+                    h("div",{style:{fontSize:10,color:ds.color,marginTop:1}},ds.label)
+                  )
+                );
+              })
+            ),
+            h("div",{style:{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:"var(--r)",padding:"11px 14px"}},
+              h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 4px",textTransform:"uppercase",letterSpacing:1}},"Milestone · "+fmtDate(mn.end)),
+              h("p",{style:{fontSize:13,color:"var(--t1)",margin:0,lineHeight:1.6}},mn.ms)
+            )
+          );
+        })()
+      ),
+
+      // ── QUIZ ──
+      tab==="quiz"&&h("div",{style:{maxWidth:620}},
+        h("div",{style:{marginBottom:20}},
+          h("p",{style:{fontSize:14,fontWeight:500,margin:"0 0 14px"}},"Choose a topic to test your knowledge"),
+          MO.map((mn,i)=>{
+            const c=RL[i];
+            return h("div",{key:mn.id,style:{marginBottom:14}},
+              h("p",{style:{fontSize:10,color:c.t,fontFamily:"var(--mo)",margin:"0 0 6px",textTransform:"uppercase"}},`Month ${mn.id} — ${mn.title} · `+fmtRange(mn.start,mn.end)),
+              h("div",{style:{display:"flex",flexWrap:"wrap",gap:6}},
+                mn.qz.map(topic=>h("button",{key:topic,className:"qb",onClick:()=>startQ(topic,i),
+                  style:{"--qtc":c.t,"--qbc":c.b,padding:"5px 11px",background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:"var(--r)",color:"var(--t2)",fontSize:12,cursor:"pointer",fontFamily:"var(--fn)",transition:"all .15s"}
+                },topic))
+              )
+            );
+          })
+        ),
+        qLoad&&h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:10,padding:24,textAlign:"center",color:"var(--t3)",fontFamily:"var(--mo)",fontSize:13}},"Generating question…"),
+        quiz&&!qLoad&&(quiz.err
+          ?h("div",{style:{background:"var(--da-bg)",border:"1px solid var(--da-bd)",borderRadius:"var(--r)",padding:16,color:"var(--da)",fontSize:13}},"Failed to generate — try another topic.")
+          :h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:10,padding:20}},
+            h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 8px",fontFamily:"var(--mo)"}},quiz.topic),
+            h("p",{style:{fontSize:14,fontWeight:500,margin:"0 0 14px",lineHeight:1.6}},quiz.question),
+            h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
+              Object.entries(quiz.options).map(([k,v])=>{
+                let bg="var(--bg2)",border="var(--bd)",col="var(--t1)";
+                if(quiz.rev){
+                  if(k===quiz.correct){bg="var(--su-bg)";border="var(--su-bd)";col="var(--su)";}
+                  else if(k===quiz.sel){bg="var(--da-bg)";border="var(--da-bd)";col="var(--da)";}
+                }
+                return h("button",{key:k,onClick:()=>ans(k),disabled:quiz.rev,style:{
+                  padding:"10px 13px",background:bg,border:`1px solid ${border}`,borderRadius:"var(--r)",
+                  color:col,fontSize:13,cursor:quiz.rev?"default":"pointer",textAlign:"left",fontFamily:"var(--fn)",transition:"all .2s"
+                }},h("span",{style:{fontFamily:"var(--mo)",fontWeight:500,marginRight:8}},k.toUpperCase()+"."),v);
+              })
+            ),
+            quiz.rev&&h("div",null,
+              h("div",{style:{marginTop:12,padding:"11px 13px",background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:"var(--r)",fontSize:13,color:"var(--t2)",lineHeight:1.6}},
+                h("span",{style:{color:"var(--su)",fontWeight:500}},"Explanation: "),quiz.explanation
+              ),
+              h("button",{className:"pb",style:{marginTop:10},onClick:()=>startQ(quiz.topic,quiz.mi)},"Next question")
+            )
+          )
+        ),
+        qH.length>0&&h("div",{style:{marginTop:20}},
+          h("p",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mo)",textTransform:"uppercase",margin:"0 0 8px"}},"Recent history"),
+          qH.slice(0,6).map((q,i)=>h("div",{key:i,style:{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:"1px solid var(--bd)"}},
+            h("i",{className:`ti ${q.ok?"ti-circle-check":"ti-circle-x"}`,"aria-hidden":"true",style:{fontSize:15,color:q.ok?"var(--su)":"var(--da)",flexShrink:0}}),
+            h("span",{style:{fontSize:12,color:"var(--t2)",flex:1}},q.topic),
+            h("span",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mo)"}},`M${q.mi+1}`)
+          ))
+        )
+      ),
+
+      // ── MENTOR ──
+      tab==="mentor"&&h("div",{style:{maxWidth:620}},
+        h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:10,overflow:"hidden"}},
+          h("div",{style:{padding:"11px 16px",borderBottom:"1px solid var(--bd)",display:"flex",alignItems:"center",gap:8}},
+            h("i",{className:"ti ti-school","aria-hidden":"true",style:{fontSize:15,color:"var(--ac)"}}),
+            h("span",{style:{fontSize:13,fontWeight:500}},"DE mentor"),
+            h("span",{style:{fontSize:11,color:"var(--t3)",marginLeft:"auto",fontFamily:"var(--mo)"}},`Month ${curI+1} · ${dnN}/${tot} done`)
+          ),
+          h("div",{style:{height:340,overflowY:"auto",padding:14}},
+            msgs.length===0&&h("div",{style:{color:"var(--t3)",fontSize:13,textAlign:"center",paddingTop:50}},
+              h("i",{className:"ti ti-messages","aria-hidden":"true",style:{fontSize:24,display:"block",marginBottom:8}}),
+              "Ask me anything about your DE transition. I know where you are in the learning path."
+            ),
+            msgs.map((m,i)=>h("div",{key:i,style:{marginBottom:9,display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}},
+              h("div",{style:{
+                maxWidth:"78%",padding:"9px 12px",borderRadius:9,fontSize:13,lineHeight:1.6,whiteSpace:"pre-wrap",
+                background:m.role==="user"?"#2563EB":"var(--bg2)",
+                color:m.role==="user"?"#fff":"var(--t1)",
+                border:m.role==="user"?"none":"1px solid var(--bd)"
+              }},m.content)
+            )),
+            cLoad&&h("div",{style:{color:"var(--t3)",fontSize:13,fontFamily:"var(--mo)"}},"Thinking…"),
+            h("div",{ref:endR})
+          ),
+          h("div",{style:{padding:"11px 14px",borderTop:"1px solid var(--bd)",display:"flex",gap:8}},
+            h("input",{value:inp,onChange:e=>setInp(e.target.value),onKeyDown:e=>e.key==="Enter"&&!e.shiftKey&&send(),placeholder:"Ask your mentor…"}),
+            h("button",{className:"pb",onClick:send,disabled:cLoad||!inp.trim()},"Send")
+          )
+        ),
+        h("div",{style:{marginTop:10,display:"flex",flexWrap:"wrap",gap:6}},
+          [`What should I focus on this week?`,`What's hardest about month ${curI+1}?`,"Am I on track for Jan 10?","What will interviewers ask me?"]
+            .map(p=>h("button",{key:p,className:"pi",onClick:()=>setInp(p),style:{padding:"5px 10px",background:"transparent",border:"1px solid var(--bd)",borderRadius:"var(--r)",color:"var(--t2)",fontSize:11,cursor:"pointer",fontFamily:"var(--fn)",transition:"all .15s"}},p))
+        )
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+</script>
