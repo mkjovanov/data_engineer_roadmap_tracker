@@ -1,49 +1,64 @@
-
-<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg0)}
-input,button{font-family:var(--fn)}
-input{font-size:13px;background:var(--bg2);border:1px solid var(--bd2);color:var(--t1);padding:0 10px;height:36px;border-radius:var(--r);width:100%;transition:border .15s,box-shadow .15s}
-input::placeholder{color:var(--t3)}
-input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-bg)}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
-.pb{background:#2563EB;color:#fff;border:none;padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;transition:background .15s;white-space:nowrap}
-.pb:hover{background:#1D4ED8}
-.pb:disabled{opacity:.4;cursor:default}
-.sb{background:transparent;border:1px solid var(--bd2);color:var(--t2);padding:7px 14px;border-radius:var(--r);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.sb:hover{color:var(--t1);border-color:var(--ac-bd)}
-.thbtn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--r);color:var(--t2);font-size:12px;cursor:pointer;transition:all .15s}
-.thbtn:hover{color:var(--t1)}
-.qb:hover{color:var(--qtc)!important;border-color:var(--qbc)!important}
-.tr:hover{background:var(--bg2)!important}
-.mn:hover{background:var(--bg2)!important}
-.pi:hover{background:var(--bg2)!important;border-color:var(--bd2)!important}
-.tab:hover{color:var(--ac)!important}
-[data-theme=light]{
-  --bg0:#E9ECF2;--bg1:#FFFFFF;--bg2:#F5F6FA;
-  --t1:#0F1117;--t2:#52566A;--t3:#9EA4B6;
-  --bd:rgba(0,0,0,.08);--bd2:rgba(0,0,0,.15);
-  --fn:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  --mo:'SF Mono',Consolas,Monaco,'Courier New',monospace;
-  --r:7px;
-  --ac:#1D4ED8;--ac-bg:#EFF6FF;--ac-bd:#BFDBFE;
-  --pr:#6D28D9;--pr-bg:#EDE9FE;--pr-bd:#C4B5FD;
-  --su:#047857;--su-bg:#ECFDF5;--su-bd:#6EE7B7;
-  --wa:#92400E;--wa-bg:#FFFBEB;--wa-bd:#FDE68A;
-  --da:#B91C1C;--da-bg:#FEF2F2;--da-bd:#FECACA;
-}
-[data-theme=dark]{
-  --bg0:#0D0F14;--bg1:#161820;--bg2:#1D2029;
-  --t1:#ECEEF6;--t2:#878CA0;--t3:#484E64;
-  --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);
-  --ac:#60A5FA;--ac-bg:#182035;--ac-bd:#1E3A8A;
-  --pr:#A78BFA;--pr-bg:#1E1B38;--pr-bd:#4C1D95;
-  --su:#34D399;--su-bg:#0A231A;--su-bd:#064E3B;
-  --wa:#FCD34D;--wa-bg:#231B08;--wa-bd:#78350F;
-  --da:#F87171;--da-bg:#210D0D;--da-bd:#7F1D1D;
-}
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DE Transition Tracker</title>
+  <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg0);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px}
+    input,button{font-family:inherit}
+    input[type=text],input[type=password]{background:var(--bg2);border:1px solid var(--bd2);color:var(--t1);padding:0 14px;height:44px;border-radius:8px;font-size:15px;width:100%}
+    input[type=number]{background:var(--bg2);border:1px solid var(--bd2);color:var(--t1);border-radius:6px;font-size:14px;text-align:center;width:72px;height:34px;padding:0 6px;-moz-appearance:textfield}
+    input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+    input:focus{outline:none;border-color:var(--ac)!important;box-shadow:0 0 0 3px var(--ac-bg)}
+    input::placeholder{color:var(--t3)}
+    .pb{background:#2563EB;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s}
+    .pb:hover{background:#1D4ED8}.pb:disabled{opacity:.4;cursor:default}
+    .sb{background:transparent;border:1px solid var(--bd2);color:var(--t2);padding:10px 18px;border-radius:8px;font-size:14px;cursor:pointer;white-space:nowrap}
+    .sb:hover{color:var(--t1);border-color:var(--ac-bd)}
+    .icbtn{background:transparent;border:1px solid var(--bd2);color:var(--t2);width:34px;height:34px;border-radius:6px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .icbtn:hover{background:var(--bg2)}
+    .tab-b:hover{color:var(--ac)!important}
+    .task-r:hover{background:var(--bg2)!important}
+    .mnav:hover{background:var(--bg2)!important}
+    .pill:hover{background:var(--bg2)!important}
+    .qbtn:hover{color:var(--qtc)!important;border-color:var(--qbc)!important}
+    .status-btn{flex-shrink:0;width:22px;height:22px;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:2px}
+    .status-btn:hover{opacity:.8}
+    :root,[data-theme=light]{
+      --bg0:#E9ECF2;--bg1:#fff;--bg2:#F5F6FA;
+      --t1:#0F1117;--t2:#52566A;--t3:#9EA4B6;
+      --bd:rgba(0,0,0,.08);--bd2:rgba(0,0,0,.15);
+      --ac:#1D4ED8;--ac-bg:#EFF6FF;--ac-bd:#BFDBFE;
+      --pr:#6D28D9;--pr-bg:#EDE9FE;--pr-bd:#C4B5FD;
+      --su:#047857;--su-bg:#ECFDF5;--su-bd:#6EE7B7;
+      --wa:#92400E;--wa-bg:#FFFBEB;--wa-bd:#FDE68A;
+      --da:#B91C1C;--da-bg:#FEF2F2;--da-bd:#FECACA;
+    }
+    [data-theme=dark]{
+      --bg0:#0D0F14;--bg1:#161820;--bg2:#1D2029;
+      --t1:#ECEEF6;--t2:#878CA0;--t3:#484E64;
+      --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);
+      --ac:#60A5FA;--ac-bg:#182035;--ac-bd:#1E3A8A;
+      --pr:#A78BFA;--pr-bg:#1E1B38;--pr-bd:#4C1D95;
+      --su:#34D399;--su-bg:#0A231A;--su-bd:#064E3B;
+      --wa:#FCD34D;--wa-bg:#231B08;--wa-bd:#78350F;
+      --da:#F87171;--da-bg:#210D0D;--da-bd:#7F1D1D;
+    }
+  </style>
+  <script>
+    (function(){
+      try{
+        const t=JSON.parse(localStorage.getItem("de_theme"));
+        if(t)document.documentElement.setAttribute("data-theme",t);
+        else if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.setAttribute("data-theme","dark");
+      }catch{}
+    })();
+  </script>
+</head>
+<body>
 <div id="root"></div>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -51,6 +66,7 @@ input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-bg
 const{useState,useEffect,useRef,useCallback}=React;
 const h=React.createElement;
 
+// ── Role colors ───────────────────────────────────────────────────────────────
 const RL=[
   {t:"var(--ac)",bg:"var(--ac-bg)",b:"var(--ac-bd)"},
   {t:"var(--pr)",bg:"var(--pr-bg)",b:"var(--pr-bd)"},
@@ -60,34 +76,68 @@ const RL=[
   {t:"var(--pr)",bg:"var(--pr-bg)",b:"var(--pr-bd)"},
 ];
 
-// Date helpers
-function fmtDate(str){
-  const d=new Date(str+"T00:00:00");
-  return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
-}
-function fmtRange(s,e){
-  const ds=new Date(s+"T00:00:00"),de=new Date(e+"T00:00:00");
-  const ms=ds.toLocaleDateString("en-US",{month:"short",day:"numeric"});
-  const me=de.toLocaleDateString("en-US",{month:"short",day:"numeric"});
-  return ms+" – "+me;
-}
-function getDue(dueStr,isDone){
-  if(isDone)return{color:"var(--su)",label:"done",icon:"ti-circle-check"};
-  const due=new Date(dueStr+"T00:00:00");
-  const today=new Date();today.setHours(0,0,0,0);
-  const diff=Math.ceil((due-today)/86400000);
-  if(diff<0)return{color:"var(--da)",label:`${-diff}d late`,icon:"ti-alert-circle"};
-  if(diff===0)return{color:"var(--wa)",label:"due today",icon:"ti-clock-exclamation"};
-  if(diff<=7)return{color:"var(--wa)",label:`${diff}d left`,icon:"ti-clock"};
-  return{color:"var(--t3)",label:`${diff}d left`,icon:"ti-calendar"};
+// ── Books ─────────────────────────────────────────────────────────────────────
+const BOOKS={
+  fde:{id:"fde",title:"Fundamentals of Data Engineering",short:"FDE",author:"Reis & Housley",totalPages:400,col:"var(--ac)",colBg:"var(--ac-bg)",colBd:"var(--ac-bd)"},
+  ddia:{id:"ddia",title:"Designing Data-Intensive Applications",short:"DDIA",author:"Martin Kleppmann",totalPages:562,col:"var(--pr)",colBg:"var(--pr-bg)",colBd:"var(--pr-bd)"},
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fd=s=>new Date(s+"T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+const fr=(s,e)=>fd(s)+" – "+fd(e);
+function gd(due,status){
+  if(status==="done")return{col:"var(--su)",lb:"done"};
+  const t=new Date();t.setHours(0,0,0,0);
+  const d=Math.ceil((new Date(due+"T00:00:00")-t)/86400000);
+  if(d<0)return{col:"var(--da)",lb:`${-d}d late`};
+  if(d===0)return{col:"var(--wa)",lb:"due today"};
+  if(d<=7)return{col:"var(--wa)",lb:`${d}d left`};
+  return{col:"var(--t3)",lb:`${d}d left`};
 }
 
+// ── Storage ───────────────────────────────────────────────────────────────────
+const ls=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;}};
+const ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+
+// Migrate old boolean status → "done"/null
+function migrateStatus(saved){
+  if(!saved)return{};
+  const r={};
+  for(const[k,v]of Object.entries(saved)){
+    if(v===true)r[k]="done";
+    else if(v==="done"||v==="progress")r[k]=v;
+    else r[k]=null;
+  }
+  return r;
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function callClaude(messages,system,apiKey){
+  if(!apiKey)throw new Error("No API key set — click Settings to add yours");
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key":apiKey,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system,messages})
+  });
+  if(!res.ok){let m=`HTTP ${res.status}`;try{const j=await res.json();m=j?.error?.message||m;}catch{}throw new Error(m);}
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.message||"API error");
+  const text=data.content?.find(b=>b.type==="text")?.text;
+  if(!text)throw new Error("Empty response");
+  return text;
+}
+
+// ── Data ──────────────────────────────────────────────────────────────────────
 const MO=[
-  {id:1,title:"Foundations",goal:"Build the mental model before touching tools",
-   start:"2026-07-11",end:"2026-08-10",
+  {id:1,title:"Foundations",goal:"Build the mental model before touching tools",start:"2026-07-11",end:"2026-08-10",
    tasks:[
-    {id:"1-1",due:"2026-07-15",text:"Read FDE cover to cover — take notes on the data lifecycle stages",tag:"Reading"},
-    {id:"1-2",due:"2026-07-19",text:"Understand all FDE undercurrents: security, DataOps, orchestration, data management",tag:"Reading"},
+    {id:"1-1",due:"2026-07-15",text:"Read FDE cover to cover — take notes on the data lifecycle stages",tag:"Reading",bookId:"fde"},
+    {id:"1-2",due:"2026-07-19",text:"Understand all FDE undercurrents: security, DataOps, orchestration, data management",tag:"Reading",bookId:"fde"},
     {id:"1-3",due:"2026-07-22",text:"SQL: window functions — ROW_NUMBER, RANK, LAG/LEAD, PARTITION BY",tag:"SQL"},
     {id:"1-4",due:"2026-07-25",text:"SQL: CTEs and recursive CTEs",tag:"SQL"},
     {id:"1-5",due:"2026-07-28",text:"SQL: learn to read query execution plans (EXPLAIN output)",tag:"SQL"},
@@ -96,12 +146,11 @@ const MO=[
    ],
    ms:"You can explain the difference between a data lake, data warehouse, and lakehouse — and why each exists.",
    qz:["Data lifecycle stages","SQL window functions","Dimensional modeling","OLTP vs OLAP"]},
-  {id:2,title:"Core tooling",goal:"Get hands dirty with the actual stack",
-   start:"2026-08-11",end:"2026-09-10",
+  {id:2,title:"Core tooling",goal:"Get hands dirty with the actual stack",start:"2026-08-11",end:"2026-09-10",
    tasks:[
     {id:"2-1",due:"2026-08-14",text:"Python for DE: pandas and polars for data manipulation",tag:"Python"},
     {id:"2-2",due:"2026-08-17",text:"Read and write Parquet files (not just CSV)",tag:"Python"},
-    {id:"2-3",due:"2026-08-21",text:"Build a Python script hitting a REST API with pagination and error handling",tag:"Python"},
+    {id:"2-3",due:"2026-08-21",text:"Build a Python script hitting a REST API with pagination",tag:"Python"},
     {id:"2-4",due:"2026-08-24",text:"Complete dbt Fundamentals free course on dbt Learn",tag:"dbt"},
     {id:"2-5",due:"2026-08-28",text:"Complete dbt Jinja/Macros free course on dbt Learn",tag:"dbt"},
     {id:"2-6",due:"2026-09-01",text:"Set up dbt locally against DuckDB or Postgres",tag:"dbt"},
@@ -111,12 +160,11 @@ const MO=[
    ],
    ms:"You have dbt running locally and can build a multi-model transformation from a raw CSV source.",
    qz:["Parquet vs CSV","dbt core concepts","dbt ref() and sources","Azure ADLS Gen2"]},
-  {id:3,title:"Pipeline thinking",goal:"Connect the pieces end to end",
-   start:"2026-09-11",end:"2026-10-10",
+  {id:3,title:"Pipeline thinking",goal:"Connect the pieces end to end",start:"2026-09-11",end:"2026-10-10",
    tasks:[
-    {id:"3-1",due:"2026-09-14",text:"DDIA: read Part 1 — reliable, scalable, maintainable systems",tag:"Reading"},
-    {id:"3-2",due:"2026-09-17",text:"DDIA: storage engines chapter",tag:"Reading"},
-    {id:"3-3",due:"2026-09-21",text:"DDIA: replication chapter",tag:"Reading"},
+    {id:"3-1",due:"2026-09-14",text:"DDIA: read Part 1 — reliable, scalable, maintainable systems",tag:"Reading",bookId:"ddia"},
+    {id:"3-2",due:"2026-09-17",text:"DDIA: storage engines chapter",tag:"Reading",bookId:"ddia"},
+    {id:"3-3",due:"2026-09-21",text:"DDIA: replication chapter",tag:"Reading",bookId:"ddia"},
     {id:"3-4",due:"2026-09-24",text:"Set up Airflow or Prefect locally via Docker",tag:"Orchestration"},
     {id:"3-5",due:"2026-09-28",text:"Build a DAG: API → storage → dbt run",tag:"Orchestration"},
     {id:"3-6",due:"2026-10-02",text:"Add retry logic and failure alerting to the DAG",tag:"Orchestration"},
@@ -125,8 +173,7 @@ const MO=[
    ],
    ms:"A pipeline runs on a schedule, ingests real data, transforms with dbt, and doesn't fail silently.",
    qz:["DDIA storage engines","Airflow DAG concepts","Pipeline reliability","Orchestration fundamentals"]},
-  {id:4,title:"Portfolio project",goal:"Build the thing you'll talk about in interviews",
-   start:"2026-10-11",end:"2026-11-10",
+  {id:4,title:"Portfolio project",goal:"Build the thing you'll talk about in interviews",start:"2026-10-11",end:"2026-11-10",
    tasks:[
     {id:"4-1",due:"2026-10-14",text:"Choose a data source and design the project scope",tag:"Design"},
     {id:"4-2",due:"2026-10-18",text:"Ingest: pull from a public API on a schedule",tag:"Build"},
@@ -139,22 +186,20 @@ const MO=[
    ],
    ms:"You can walk someone through the project end to end and explain every design decision.",
    qz:["Data lake partitioning","dbt project structure","Pipeline design trade-offs","Data modeling for analytics"]},
-  {id:5,title:"Depth + Spark",goal:"Handle the scale questions",
-   start:"2026-11-11",end:"2026-12-10",
+  {id:5,title:"Depth + Spark",goal:"Handle the scale questions",start:"2026-11-11",end:"2026-12-10",
    tasks:[
     {id:"5-1",due:"2026-11-14",text:"PySpark: understand RDDs vs DataFrames vs Datasets conceptually",tag:"Spark"},
-    {id:"5-2",due:"2026-11-18",text:"PySpark: understand partitioning and shuffles — why they hurt performance",tag:"Spark"},
+    {id:"5-2",due:"2026-11-18",text:"PySpark: understand partitioning and shuffles — why they hurt",tag:"Spark"},
     {id:"5-3",due:"2026-11-22",text:"Run a Spark job on Databricks Community Edition (free tier)",tag:"Spark"},
-    {id:"5-4",due:"2026-11-26",text:"DDIA: encoding and evolution chapter",tag:"Reading"},
-    {id:"5-5",due:"2026-11-30",text:"DDIA: stream processing chapter",tag:"Reading"},
-    {id:"5-6",due:"2026-12-04",text:"DDIA: distributed transactions chapter",tag:"Reading"},
+    {id:"5-4",due:"2026-11-26",text:"DDIA: encoding and evolution chapter",tag:"Reading",bookId:"ddia"},
+    {id:"5-5",due:"2026-11-30",text:"DDIA: stream processing chapter",tag:"Reading",bookId:"ddia"},
+    {id:"5-6",due:"2026-12-04",text:"DDIA: distributed transactions chapter",tag:"Reading",bookId:"ddia"},
     {id:"5-7",due:"2026-12-07",text:"Study for DP-900 (Azure Data Fundamentals) as a warmup",tag:"Cert"},
     {id:"5-8",due:"2026-12-10",text:"Start DP-203 (Data Engineering on Azure) study guide",tag:"Cert"},
    ],
    ms:"You can explain what happens when a Spark join causes a shuffle, and why you'd avoid it.",
    qz:["Spark shuffles and partitioning","DDIA distributed concepts","Stream vs batch processing","Azure DP-203 topics"]},
-  {id:6,title:"Job readiness",goal:"Translate skills into opportunities",
-   start:"2026-12-11",end:"2027-01-10",
+  {id:6,title:"Job readiness",goal:"Translate skills into opportunities",start:"2026-12-11",end:"2027-01-10",
    tasks:[
     {id:"6-1",due:"2026-12-15",text:"Practice SQL on DataLemur — complete 20+ DE-specific problems",tag:"Interview"},
     {id:"6-2",due:"2026-12-19",text:"Practice walking through your portfolio project out loud (10+ times)",tag:"Interview"},
@@ -169,195 +214,305 @@ const MO=[
    qz:["DE system design","Data quality and testing","CI/CD for data pipelines","Terraform for data infra"]},
 ];
 
-async function callClaude(msgs,sys){
-  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:sys,messages:msgs})});
-  const d=await r.json();
-  if(d.error)throw new Error(d.error.message);
-  return d.content?.[0]?.text||"";
-}
-async function ls(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null;}catch{return null;}}
-async function ss(k,v){try{await window.storage.set(k,JSON.stringify(v));}catch{}}
+function pct(mid,st){const m=MO.find(x=>x.id===mid);return m?Math.round(m.tasks.filter(t=>st[t.id]==="done").length/m.tasks.length*100):0;}
+function getCur(st){for(let i=MO.length-1;i>=0;i--)if(pct(MO[i].id,st)>0||MO[i].tasks.some(t=>st[t.id]==="progress"))return i;return 0;}
 
-function pct(mid,dn){const m=MO.find(x=>x.id===mid);if(!m)return 0;return Math.round(m.tasks.filter(t=>dn[t.id]).length/m.tasks.length*100);}
-function getCur(dn){for(let i=MO.length-1;i>=0;i--)if(pct(MO[i].id,dn)>0)return i;return 0;}
-
+// ── App ───────────────────────────────────────────────────────────────────────
 function App(){
-  const[theme,setTheme]=useState("light");
+  const[theme,setTheme]=useState(()=>ls("de_theme")||(window.matchMedia?.("(prefers-color-scheme:dark)").matches?"dark":"light"));
   const[tab,setTab]=useState("dashboard");
-  const[dn,setDn]=useState({});
+  // st = task status map: {taskId: "done"|"progress"|null}
+  const[st,setSt]=useState(()=>migrateStatus(ls("de_status")||ls("de_prog")||{}));
   const[selM,setSelM]=useState(0);
+  const[apiKey,setApiKey]=useState(()=>ls("de_apikey")||"");
+  const[keyInp,setKeyInp]=useState("");
+  const[showSettings,setShowSettings]=useState(false);
+  // bp = book pages: {bookId: currentPage}
+  const[bp,setBp]=useState(()=>ls("de_books")||{});
+  // bpInp = local input state for page editors: {bookId: string}
+  const[bpInp,setBpInp]=useState({});
   const[quiz,setQuiz]=useState(null);
   const[qLoad,setQL]=useState(false);
-  const[qH,setQH]=useState([]);
+  const[qH,setQH]=useState(()=>ls("de_qhist")||[]);
   const[msgs,setMsgs]=useState([]);
   const[inp,setInp]=useState("");
   const[cLoad,setCL]=useState(false);
-  const[rdy,setRdy]=useState(false);
+  const[chatErr,setCE]=useState(null);
   const endR=useRef(null);
 
+  useEffect(()=>{document.documentElement.setAttribute("data-theme",theme);},[theme]);
+  useEffect(()=>{endR.current?.scrollIntoView({behavior:"smooth"});},[msgs,cLoad]);
+  // Sync bpInp with bp on load
   useEffect(()=>{
-    (async()=>{
-      const[p,h2,th]=await Promise.all([ls("de_prog"),ls("de_qhist"),ls("de_theme")]);
-      if(p)setDn(p);
-      if(h2)setQH(h2);
-      const t=th||(window.matchMedia?.("(prefers-color-scheme:dark)").matches?"dark":"light");
-      setTheme(t);setRdy(true);
-    })();
+    const init={};
+    Object.keys(BOOKS).forEach(id=>{init[id]=String(bp[id]||0);});
+    setBpInp(init);
   },[]);
 
-  useEffect(()=>{endR.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
-  const toggle=useCallback(async(id)=>{setDn(prev=>{const n={...prev,[id]:!prev[id]};ss("de_prog",n);return n;});},[]);
-  const toggleTheme=()=>{setTheme(t=>{const n=t==="dark"?"light":"dark";ss("de_theme",n);return n;});};
+  const cycleStatus=useCallback(id=>{
+    setSt(prev=>{
+      const cur=prev[id];
+      const next=cur==="done"?null:cur==="progress"?"done":"progress";
+      const n={...prev,[id]:next};
+      ss("de_status",n);
+      return n;
+    });
+  },[]);
 
-  const curI=getCur(dn);
-  const cm=MO[curI],cr=RL[curI];
+  const updateBp=useCallback((bookId,rawVal)=>{
+    const book=BOOKS[bookId];
+    const val=Math.min(book.totalPages,Math.max(0,parseInt(rawVal)||0));
+    setBp(prev=>{const n={...prev,[bookId]:val};ss("de_books",n);return n;});
+    setBpInp(prev=>({...prev,[bookId]:String(val)}));
+  },[]);
+
+  const toggleTheme=()=>setTheme(t=>{const n=t==="dark"?"light":"dark";ss("de_theme",n);return n;});
+  const saveKey=()=>{const k=keyInp.trim();if(k){setApiKey(k);ss("de_apikey",k);setKeyInp("");setShowSettings(false);}};
+  const clearKey=()=>{setApiKey("");ss("de_apikey","");};
+
+  const curI=getCur(st),cm=MO[curI],cr=RL[curI];
   const tot=MO.reduce((a,m)=>a+m.tasks.length,0);
-  const dnN=Object.values(dn).filter(Boolean).length;
-  const ov=Math.round(dnN/tot*100);
-
-  // Next upcoming deadline (not done, earliest)
-  const nextDl=MO.flatMap(m=>m.tasks.filter(t=>!dn[t.id])).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
+  const doneN=MO.flatMap(m=>m.tasks).filter(t=>st[t.id]==="done").length;
+  const progN=MO.flatMap(m=>m.tasks).filter(t=>st[t.id]==="progress").length;
+  const ov=Math.round(doneN/tot*100);
+  const nextDl=MO.flatMap(m=>m.tasks.filter(t=>st[t.id]!=="done")).sort((a,b)=>new Date(a.due)-new Date(b.due))[0];
 
   async function startQ(topic,mi){
     setQL(true);setQuiz(null);
-    const m=MO[mi];
     try{
-      const txt=await callClaude(
-        [{role:"user",content:`Quiz on "${topic}" for SWE→DE learner, month ${mi+1} (${m.title}). Return ONLY valid JSON:\n{"question":"...","options":{"a":"...","b":"...","c":"...","d":"..."},"correct":"a","explanation":"..."}`}],
-        "Return ONLY valid JSON. No markdown, no code fences, no preamble."
-      );
-      const p=JSON.parse(txt.replace(/```json|```/g,"").trim());
-      setQuiz({...p,topic,mi,sel:null,rev:false});
-    }catch{setQuiz({err:true});}
-    setQL(false);
+      const txt=await callClaude([{role:"user",content:`Quiz on "${topic}" for SWE→DE learner month ${mi+1} (${MO[mi].title}). Return ONLY valid JSON:\n{"question":"...","options":{"a":"...","b":"...","c":"...","d":"..."},"correct":"a","explanation":"..."}`}],
+        "Return ONLY valid JSON. No markdown, no code fences, no preamble.",apiKey);
+      setQuiz({...JSON.parse(txt.replace(/```json|```/g,"").trim()),topic,mi,sel:null,rev:false});
+    }catch(e){console.error(e);setQuiz({err:true,msg:e.message});}
+    finally{setQL(false);}
   }
-
   async function ans(k){
     if(!quiz||quiz.rev)return;
-    const ok=k===quiz.correct;
-    setQH(prev=>{const n=[{topic:quiz.topic,mi:quiz.mi,ok,ts:Date.now()},...prev].slice(0,50);ss("de_qhist",n);return n;});
+    setQH(prev=>{const n=[{topic:quiz.topic,mi:quiz.mi,ok:k===quiz.correct,ts:Date.now()},...prev].slice(0,50);ss("de_qhist",n);return n;});
     setQuiz(q=>({...q,sel:k,rev:true}));
   }
-
   async function send(){
-    if(!inp.trim()||cLoad)return;
-    const um={role:"user",content:inp.trim()};
-    const nxt=[...msgs,um];setMsgs(nxt);setInp("");setCL(true);
-    const dl=MO.flatMap(m=>m.tasks.filter(t=>dn[t.id]).map(t=>t.text));
-    const sys=`You are Marko's DE mentor. He's a SWE transitioning to DE, month ${curI+1}/6 (${cm.title}). ${dnN}/${tot} tasks done. Recent: ${dl.slice(-4).join("; ")||"none"}. 6-month plan ends Jan 10 2027. Be direct, technical, max 3 short paragraphs.`;
-    try{const txt=await callClaude(nxt,sys);setMsgs(m=>[...m,{role:"assistant",content:txt}]);}
-    catch{setMsgs(m=>[...m,{role:"assistant",content:"Connection error — try again."}]);}
-    setCL(false);
+    const text=inp.trim();
+    if(!text||cLoad)return;
+    setCE(null);
+    const um={role:"user",content:text};
+    setMsgs(prev=>[...prev,um]);setInp("");setCL(true);
+    try{
+      const done=MO.flatMap(m=>m.tasks.filter(t=>st[t.id]==="done").map(t=>t.text));
+      const sys=`You are Marko's Data Engineering mentor. SWE transitioning to DE, month ${curI+1}/6 (${cm.title}). Done: ${doneN}/${tot} tasks, ${progN} in progress. Recent completions: ${done.slice(-4).join("; ")||"none"}. Plan ends Jan 10 2027. Direct, technical, max 3 short paragraphs.`;
+      const reply=await callClaude([...msgs,um],sys,apiKey);
+      setMsgs(prev=>[...prev,{role:"assistant",content:reply}]);
+    }catch(e){console.error(e);setCE(e.message);setMsgs(prev=>prev.slice(0,-1));setInp(text);}
+    finally{setCL(false);}
   }
 
-  if(!rdy)return h("div",{style:{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",color:"var(--t3)",fontFamily:"var(--fn)",background:"var(--bg0)"}},"Loading…");
+  const mo="'SF Mono',Consolas,Monaco,monospace";
+  const fn="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif";
+  const r="9px";
+  const ic=(cls,s={})=>h("i",{className:`ti ${cls}`,"aria-hidden":"true",style:s});
+  const badge=txt=>h("span",{style:{fontSize:12,color:"var(--t3)",background:"var(--bg2)",border:"1px solid var(--bd)",padding:"2px 8px",borderRadius:5,lineHeight:1}},txt);
 
-  const TABS=[{id:"dashboard",ic:"ti-layout-dashboard",lb:"Dashboard"},{id:"tasks",ic:"ti-checklist",lb:"Tasks"},{id:"quiz",ic:"ti-brain",lb:"Quiz"},{id:"mentor",ic:"ti-message-2",lb:"Mentor"}];
+  // ── Status indicator (tri-state clickable) ──
+  function StatusBtn({taskId}){
+    const status=st[taskId];
+    let bgColor,borderColor,content;
+    if(status==="done"){
+      bgColor="var(--su)";borderColor="var(--su)";
+      content=ic("ti-check",{fontSize:12,color:"#fff"});
+    }else if(status==="progress"){
+      bgColor="var(--wa-bg)";borderColor="var(--wa)";
+      content=h("div",{style:{width:10,height:3,background:"var(--wa)",borderRadius:2}});
+    }else{
+      bgColor="transparent";borderColor="var(--bd2)";content=null;
+    }
+    return h("div",{
+      className:"status-btn",
+      onClick:e=>{e.stopPropagation();cycleStatus(taskId);},
+      title:`Click to cycle: todo → in progress → done (currently: ${status||"todo"})`,
+      style:{background:bgColor,border:`1.5px solid ${borderColor}`}
+    },content);
+  }
 
-  return h("div",{"data-theme":theme,style:{background:"var(--bg0)",minHeight:"100vh",fontFamily:"var(--fn)",color:"var(--t1)",transition:"background .25s,color .25s"}},
-    h("h2",{className:"sr-only"},"DE transition tracker — 6-month SWE to Data Engineer learning path"),
+  // ── Book progress mini widget (inline in task row) ──
+  function BookMini({bookId}){
+    const book=BOOKS[bookId];
+    const pages=bp[bookId]||0;
+    const pct2=Math.round(pages/book.totalPages*100);
+    return h("div",{style:{display:"flex",alignItems:"center",gap:8,marginTop:7,paddingTop:7,borderTop:"1px solid var(--bd)"}},
+      h("div",{style:{fontSize:12,color:book.col,fontFamily:mo,flexShrink:0,fontWeight:500}},book.short),
+      h("div",{style:{flex:1,height:5,background:"var(--bd2)",borderRadius:3,overflow:"hidden"}},
+        h("div",{style:{width:`${pct2}%`,height:"100%",background:book.col,borderRadius:3,transition:"width .3s"}})
+      ),
+      h("span",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,flexShrink:0}},`p.${pages}/${book.totalPages}`),
+      h("span",{style:{fontSize:11,color:book.col,fontFamily:mo,flexShrink:0}},pct2+"%")
+    );
+  }
+
+  // ── Book editor card (dashboard + tasks) ──
+  function BookCard({bookId,compact=false}){
+    const book=BOOKS[bookId];
+    const pages=bp[bookId]||0;
+    const pct2=Math.round(pages/book.totalPages*100);
+    const localVal=bpInp[bookId]??String(pages);
+    const commit=val=>{updateBp(bookId,val);};
+    return h("div",{style:{background:"var(--bg1)",border:`1px solid ${book.colBd}`,borderRadius:r,padding:compact?"16px 18px":"20px 22px"}},
+      h("div",{style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:compact?8:12}},
+        h("div",null,
+          h("p",{style:{fontSize:compact?13:15,fontWeight:500,color:book.col,margin:"0 0 2px"}},book.short),
+          h("p",{style:{fontSize:compact?11:12,color:"var(--t3)",margin:0}}),
+          h("p",{style:{fontSize:compact?11:12,color:"var(--t3)",margin:0}},book.author+" · "+book.totalPages+" pages")
+        ),
+        h("span",{style:{fontSize:compact?20:26,fontWeight:500,color:book.col,fontFamily:mo}},pct2+"%")
+      ),
+      h("div",{style:{height:compact?6:8,background:"var(--bd2)",borderRadius:4,overflow:"hidden",marginBottom:compact?12:16}},
+        h("div",{style:{width:`${pct2}%`,height:"100%",background:book.col,borderRadius:4,transition:"width .3s"}})
+      ),
+      h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+        h("button",{className:"icbtn",onClick:()=>commit(Math.max(0,pages-10)),title:"-10 pages"},ic("ti-minus",{fontSize:14})),
+        h("input",{
+          type:"number",min:0,max:book.totalPages,
+          value:localVal,
+          onChange:e=>setBpInp(prev=>({...prev,[bookId]:e.target.value})),
+          onBlur:e=>commit(e.target.value),
+          onKeyDown:e=>e.key==="Enter"&&commit(e.target.value),
+          style:{borderColor:book.colBd}
+        }),
+        h("button",{className:"icbtn",onClick:()=>commit(pages+10),title:"+10 pages"},ic("ti-plus",{fontSize:14})),
+        h("span",{style:{fontSize:14,color:"var(--t2)"}},`/ ${book.totalPages} pages`),
+        pages===book.totalPages&&h("span",{style:{fontSize:12,color:"var(--su)",fontFamily:mo,marginLeft:4}},"✓ finished!")
+      )
+    );
+  }
+
+  const noKeyBanner=h("div",{style:{padding:"20px 24px",background:"var(--wa-bg)",border:"1px solid var(--wa-bd)",borderRadius:r,fontSize:15,color:"var(--wa)",marginBottom:20}},
+    h("p",{style:{margin:"0 0 8px",fontWeight:500,fontSize:16}},"API key required"),
+    "The Quiz and Mentor features use the Anthropic API. Click ",h("strong",null,"Settings")," to enter your key."
+  );
+
+  return h("div",{"data-theme":theme,style:{background:"var(--bg0)",minHeight:"100vh",fontFamily:fn,color:"var(--t1)",fontSize:16}},
 
     // HEADER
-    h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 20px",background:"var(--bg1)",borderBottom:"1px solid var(--bd)",position:"sticky",top:0,zIndex:10}},
-      h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-        h("i",{className:"ti ti-database","aria-hidden":"true",style:{fontSize:17,color:"var(--ac)"}}),
-        h("span",{style:{fontWeight:500,fontSize:15}},"DE transition tracker"),
-        h("span",{style:{fontSize:11,color:"var(--t3)",fontFamily:"var(--mo)"}},"SWE → DE")
+    h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 32px",background:"var(--bg1)",borderBottom:"1px solid var(--bd)",position:"sticky",top:0,zIndex:10}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:12}},
+        ic("ti-database",{fontSize:22,color:"var(--ac)"}),
+        h("span",{style:{fontWeight:500,fontSize:19}},"DE transition tracker"),
+        h("span",{style:{fontSize:13,color:"var(--t3)",fontFamily:mo}},"SWE → DE")
       ),
       h("div",{style:{display:"flex",alignItems:"center",gap:10}},
-        h("div",{style:{display:"flex",alignItems:"center",gap:6}},
-          h("div",{style:{width:88,height:4,background:"var(--bd2)",borderRadius:4,overflow:"hidden"}},
-            h("div",{style:{width:`${ov}%`,height:"100%",background:"#2563EB",borderRadius:4,transition:"width .3s"}})
+        h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+          h("div",{style:{width:110,height:5,background:"var(--bd2)",borderRadius:4,overflow:"hidden"}},
+            h("div",{style:{width:`${ov}%`,height:"100%",background:"#2563EB",borderRadius:4}})
           ),
-          h("span",{style:{fontSize:11,color:"var(--t2)",fontFamily:"var(--mo)"}},ov+"%")
+          h("span",{style:{fontSize:13,color:"var(--t2)",fontFamily:mo}},ov+"%")
         ),
-        h("button",{className:"thbtn",onClick:toggleTheme,title:theme==="dark"?"Light mode":"Dark mode"},
-          h("i",{className:`ti ${theme==="dark"?"ti-sun":"ti-moon"}`,"aria-hidden":"true",style:{fontSize:13}}),
-          theme==="dark"?"Light":"Dark"
+        progN>0&&h("span",{style:{fontSize:12,color:"var(--wa)",background:"var(--wa-bg)",border:"1px solid var(--wa-bd)",padding:"3px 8px",borderRadius:5,fontFamily:mo}},progN+" in progress"),
+        h("button",{className:"sb",onClick:()=>{setShowSettings(s=>!s);setKeyInp(apiKey);},style:{display:"flex",alignItems:"center",gap:6}},
+          ic(apiKey?"ti-key":"ti-key-off",{fontSize:15}),"Settings"
+        ),
+        h("button",{className:"sb",onClick:toggleTheme,style:{display:"flex",alignItems:"center",gap:6}},
+          ic(theme==="dark"?"ti-sun":"ti-moon",{fontSize:15}),theme==="dark"?"Light":"Dark"
         )
       )
     ),
 
+    // SETTINGS
+    showSettings&&h("div",{style:{padding:"16px 32px",background:"var(--bg2)",borderBottom:"1px solid var(--bd)",display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
+      h("span",{style:{fontSize:14,color:"var(--t2)",flexShrink:0}},"Anthropic API key"),
+      h("input",{type:"password",value:keyInp,onChange:e=>setKeyInp(e.target.value),onKeyDown:e=>e.key==="Enter"&&saveKey(),placeholder:"sk-ant-api03-...",style:{flex:1,minWidth:240}}),
+      h("button",{className:"pb",onClick:saveKey},"Save"),
+      apiKey&&h("button",{className:"sb",onClick:clearKey},"Clear"),
+      h("span",{style:{fontSize:12,color:"var(--t3)"}},"Stored in localStorage only · sent only to api.anthropic.com")
+    ),
+
     // TABS
-    h("div",{style:{display:"flex",borderBottom:"1px solid var(--bd)",padding:"0 20px",background:"var(--bg1)"}},
-      TABS.map(t=>h("button",{key:t.id,className:"tab",onClick:()=>setTab(t.id),style:{
-        display:"flex",alignItems:"center",gap:6,padding:"10px 14px",border:"none",background:"transparent",cursor:"pointer",
-        color:tab===t.id?"var(--ac)":"var(--t2)",borderBottom:`2px solid ${tab===t.id?"var(--ac)":"transparent"}`,
-        fontSize:13,fontWeight:tab===t.id?500:400,fontFamily:"var(--fn)",transition:"color .15s"
-      }},h("i",{className:`ti ${t.ic}`,"aria-hidden":"true",style:{fontSize:14}}),t.lb))
+    h("div",{style:{display:"flex",borderBottom:"1px solid var(--bd)",padding:"0 32px",background:"var(--bg1)"}},
+      [{id:"dashboard",ic:"ti-layout-dashboard",lb:"Dashboard"},{id:"tasks",ic:"ti-checklist",lb:"Tasks"},{id:"quiz",ic:"ti-brain",lb:"Quiz"},{id:"mentor",ic:"ti-message-2",lb:"Mentor"}]
+      .map(t=>h("button",{key:t.id,className:"tab-b",onClick:()=>setTab(t.id),style:{display:"flex",alignItems:"center",gap:8,padding:"14px 22px",border:"none",background:"transparent",cursor:"pointer",color:tab===t.id?"var(--ac)":"var(--t2)",borderBottom:`2px solid ${tab===t.id?"var(--ac)":"transparent"}`,fontSize:15,fontWeight:tab===t.id?500:400,fontFamily:fn}},
+        ic(t.ic,{fontSize:17}),t.lb
+      ))
     ),
 
     // CONTENT
-    h("div",{style:{padding:"20px",maxWidth:860,margin:"0 auto"}},
+    h("div",{style:{padding:"28px 32px",maxWidth:1100,margin:"0 auto"}},
 
       // ── DASHBOARD ──
       tab==="dashboard"&&h("div",null,
         // Pipeline
-        h("div",{style:{marginBottom:20}},
-          h("p",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mo)",textTransform:"uppercase",letterSpacing:2,margin:"0 0 10px"}},"6-month pipeline · Jul 11, 2026 – Jan 10, 2027"),
-          h("div",{style:{display:"flex",alignItems:"stretch",overflowX:"auto",paddingBottom:4}},
+        h("div",{style:{marginBottom:24}},
+          h("p",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,textTransform:"uppercase",letterSpacing:2,margin:"0 0 14px"}},"6-month pipeline · Jul 11, 2026 – Jan 10, 2027"),
+          h("div",{style:{display:"flex",overflowX:"auto",paddingBottom:4}},
             MO.map((mn,i)=>{
-              const p=pct(mn.id,dn);const c=RL[i];const isA=i===curI;
-              const today=new Date();today.setHours(0,0,0,0);
-              const mEnd=new Date(mn.end+"T00:00:00");
-              const dLeft=Math.ceil((mEnd-today)/86400000);
-              return h("div",{key:mn.id,style:{display:"flex",alignItems:"center",flex:1,minWidth:95}},
-                h("button",{onClick:()=>{setSelM(i);setTab("tasks");},style:{
-                  flex:1,padding:"10px 8px",background:isA?c.bg:"var(--bg1)",
-                  border:`1px solid ${isA?c.b:"var(--bd)"}`,borderRadius:"var(--r)",
-                  cursor:"pointer",textAlign:"left",fontFamily:"var(--fn)",transition:"all .2s"
-                }},
-                  h("div",{style:{fontSize:9,color:c.t,fontFamily:"var(--mo)",marginBottom:2}},(p===100?"✓ ":"")+"M"+mn.id),
-                  h("div",{style:{fontSize:11,fontWeight:500,color:"var(--t1)",marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},mn.title),
-                  h("div",{style:{fontSize:9,color:"var(--t3)",marginBottom:4,fontFamily:"var(--mo)",whiteSpace:"nowrap"}},fmtRange(mn.start,mn.end)),
-                  h("div",{style:{height:3,background:"var(--bd2)",borderRadius:2,overflow:"hidden"}},
-                    h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:2,transition:"width .4s"}})
+              const p=pct(mn.id,st);const c=RL[i];const isA=i===curI;
+              const inProg=mn.tasks.filter(t=>st[t.id]==="progress").length;
+              return h("div",{key:mn.id,style:{display:"flex",alignItems:"center",flex:1,minWidth:130}},
+                h("button",{onClick:()=>{setSelM(i);setTab("tasks");},style:{flex:1,padding:"16px 12px",background:isA?c.bg:"var(--bg1)",border:`1px solid ${isA?c.b:"var(--bd)"}`,borderRadius:r,cursor:"pointer",textAlign:"left",fontFamily:fn}},
+                  h("div",{style:{fontSize:11,color:c.t,fontFamily:mo,marginBottom:3}},(p===100?"✓ ":"")+"M"+mn.id),
+                  h("div",{style:{fontSize:13,fontWeight:500,color:"var(--t1)",marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},mn.title),
+                  h("div",{style:{fontSize:11,color:"var(--t3)",marginBottom:6,fontFamily:mo}},fr(mn.start,mn.end)),
+                  h("div",{style:{height:5,background:"var(--bd2)",borderRadius:3,overflow:"hidden"}},
+                    h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:3}})
                   ),
-                  h("div",{style:{fontSize:9,color:"var(--t3)",marginTop:3,fontFamily:"var(--mo)"}},p+"%")
+                  h("div",{style:{display:"flex",justifyContent:"space-between",marginTop:4}},
+                    h("span",{style:{fontSize:11,color:"var(--t3)",fontFamily:mo}},p+"%"),
+                    inProg>0&&h("span",{style:{fontSize:11,color:"var(--wa)",fontFamily:mo}},inProg+"⟳")
+                  )
                 ),
-                i<MO.length-1&&h("i",{className:"ti ti-arrow-right","aria-hidden":"true",style:{fontSize:11,color:"var(--t3)",flexShrink:0,margin:"0 2px"}})
+                i<MO.length-1&&ic("ti-arrow-right",{fontSize:13,color:"var(--t3)",flexShrink:0,margin:"0 2px"})
               );
             })
           )
         ),
 
-        // Stats row
-        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:10,marginBottom:16}},
+        // Stats
+        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,minmax(0,1fr))",gap:14,marginBottom:24}},
           [
-            {lb:"Tasks done",val:`${dnN}/${tot}`,col:"var(--ac)"},
-            {lb:"Current month",val:`Month ${curI+1}`,col:cr.t},
-            {lb:"Next deadline",val:nextDl?fmtDate(nextDl.due):"All done!",col:nextDl?getDue(nextDl.due,false).color:"var(--su)"}
-          ].map(s=>h("div",{key:s.lb,style:{background:"var(--bg1)",borderRadius:"var(--r)",border:"1px solid var(--bd)",padding:"14px 16px"}},
-            h("p",{style:{fontSize:11,color:"var(--t2)",margin:"0 0 4px"}},s.lb),
-            h("p",{style:{fontSize:20,fontWeight:500,color:s.col,margin:0,fontFamily:"var(--mo)"}},s.val)
+            {lb:"Done",val:`${doneN}/${tot}`,col:"var(--su)",ic:"ti-circle-check"},
+            {lb:"In progress",val:String(progN),col:"var(--wa)",ic:"ti-clock-play"},
+            {lb:"Next deadline",val:nextDl?fd(nextDl.due):"All done!",col:nextDl?gd(nextDl.due,st[nextDl.id]).col:"var(--su)",ic:"ti-calendar"},
+            {lb:"Overall",val:ov+"%",col:"var(--ac)",ic:"ti-chart-bar"},
+          ].map(s=>h("div",{key:s.lb,style:{background:"var(--bg1)",borderRadius:r,border:"1px solid var(--bd)",padding:"20px 22px"}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},
+              ic(s.ic,{fontSize:16,color:s.col}),
+              h("p",{style:{fontSize:13,color:"var(--t2)",margin:0}},s.lb)
+            ),
+            h("p",{style:{fontSize:28,fontWeight:500,color:s.col,margin:0,fontFamily:mo}},s.val)
           ))
         ),
 
-        // Current month card
-        h("div",{style:{background:"var(--bg1)",border:`1px solid ${cr.b}`,borderRadius:10,padding:18}},
-          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:3}},
-            h("p",{style:{fontSize:10,color:"var(--t3)",margin:0,textTransform:"uppercase",letterSpacing:1}},"Currently working on"),
-            h("span",{style:{fontSize:11,color:"var(--t3)",fontFamily:"var(--mo)"}},fmtRange(cm.start,cm.end))
+        // Books section
+        h("div",{style:{marginBottom:24}},
+          h("p",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,textTransform:"uppercase",letterSpacing:2,margin:"0 0 14px"}},"Books"),
+          h("div",{style:{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:14}},
+            Object.keys(BOOKS).map(id=>h(BookCard,{key:id,bookId:id}))
+          )
+        ),
+
+        // Current month
+        h("div",{style:{background:"var(--bg1)",border:`1px solid ${cr.b}`,borderRadius:12,padding:26}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},
+            h("p",{style:{fontSize:12,color:"var(--t3)",margin:0,textTransform:"uppercase",letterSpacing:1}},"Currently working on"),
+            h("span",{style:{fontSize:13,color:"var(--t3)",fontFamily:mo}},fr(cm.start,cm.end))
           ),
-          h("p",{style:{fontSize:16,fontWeight:500,color:cr.t,margin:"4px 0 3px"}},`Month ${curI+1}: ${cm.title}`),
-          h("p",{style:{fontSize:13,color:"var(--t2)",margin:"0 0 14px"}},cm.goal),
-          h("div",{style:{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:"var(--r)",padding:"11px 14px",marginBottom:14}},
-            h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 4px",textTransform:"uppercase",letterSpacing:1}},"Milestone"),
-            h("p",{style:{fontSize:13,color:"var(--t1)",margin:0,lineHeight:1.6}},cm.ms)
+          h("p",{style:{fontSize:21,fontWeight:500,color:cr.t,margin:"6px 0 4px"}},`Month ${curI+1}: ${cm.title}`),
+          h("p",{style:{fontSize:15,color:"var(--t2)",margin:"0 0 18px"}},cm.goal),
+          h("div",{style:{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:r,padding:"16px 20px",marginBottom:18}},
+            h("p",{style:{fontSize:12,color:"var(--t3)",margin:"0 0 6px",textTransform:"uppercase",letterSpacing:1}},"Milestone"),
+            h("p",{style:{fontSize:15,color:"var(--t1)",margin:0,lineHeight:1.7}},cm.ms)
           ),
-          // Next tasks
-          h("div",{style:{marginBottom:14}},
-            h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 8px",textTransform:"uppercase",letterSpacing:1}},"Up next"),
-            cm.tasks.filter(t=>!dn[t.id]).slice(0,2).map(t=>{
-              const ds=getDue(t.due,false);
-              return h("div",{key:t.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:"1px solid var(--bd)"}},
-                h("span",{style:{fontSize:12,color:"var(--t1)",flex:1,paddingRight:10}},t.text),
-                h("span",{style:{fontSize:11,color:ds.color,fontFamily:"var(--mo)",flexShrink:0}},fmtDate(t.due))
+          h("div",{style:{marginBottom:20}},
+            h("p",{style:{fontSize:12,color:"var(--t3)",margin:"0 0 10px",textTransform:"uppercase",letterSpacing:1}},"Up next"),
+            cm.tasks.filter(t=>st[t.id]!=="done").slice(0,3).map(t=>{
+              const s2=st[t.id];const ds=gd(t.due,s2);
+              return h("div",{key:t.id,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid var(--bd)"}},
+                h("div",{style:{display:"flex",alignItems:"center",gap:10,flex:1}},
+                  s2==="progress"&&h("span",{style:{fontSize:11,color:"var(--wa)",background:"var(--wa-bg)",padding:"2px 6px",borderRadius:4,flexShrink:0,fontFamily:mo}},"in progress"),
+                  h("span",{style:{fontSize:15,color:"var(--t1)"}},t.text)
+                ),
+                h("span",{style:{fontSize:13,color:ds.col,fontFamily:mo,flexShrink:0,marginLeft:14}},fd(t.due))
               );
             })
           ),
-          h("div",{style:{display:"flex",gap:8,flexWrap:"wrap"}},
+          h("div",{style:{display:"flex",gap:10,flexWrap:"wrap"}},
             h("button",{className:"pb",onClick:()=>{setSelM(curI);setTab("tasks");}},"View tasks"),
             h("button",{className:"sb",onClick:()=>setTab("quiz")},"Quiz me"),
             h("button",{className:"sb",onClick:()=>setTab("mentor")},"Ask mentor")
@@ -366,163 +521,191 @@ function App(){
       ),
 
       // ── TASKS ──
-      tab==="tasks"&&h("div",{style:{display:"grid",gridTemplateColumns:"165px minmax(0,1fr)",gap:18}},
+      tab==="tasks"&&h("div",{style:{display:"grid",gridTemplateColumns:"220px minmax(0,1fr)",gap:24}},
+        // Sidebar
         h("div",null,
+          // Status legend
+          h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:r,padding:"12px 14px",marginBottom:16,fontSize:12,color:"var(--t2)"}},
+            h("p",{style:{margin:"0 0 8px",fontSize:11,color:"var(--t3)",textTransform:"uppercase",letterSpacing:1}},"Click to cycle status"),
+            h("div",{style:{display:"flex",flexDirection:"column",gap:7}},
+              [{s:null,label:"Todo",border:"var(--bd2)",bg:"transparent",dot:null},
+               {s:"progress",label:"In progress",border:"var(--wa)",bg:"var(--wa-bg)",dot:h("div",{style:{width:10,height:3,background:"var(--wa)",borderRadius:2}})},
+               {s:"done",label:"Done",border:"var(--su)",bg:"var(--su)",dot:ic("ti-check",{fontSize:11,color:"#fff"})}
+              ].map(({s:_,label,border,bg,dot})=>h("div",{key:label,style:{display:"flex",alignItems:"center",gap:8}},
+                h("div",{style:{width:18,height:18,borderRadius:4,border:`1.5px solid ${border}`,background:bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},dot),
+                h("span",null,label)
+              ))
+            )
+          ),
           MO.map((mn,i)=>{
-            const p=pct(mn.id,dn);const c=RL[i];
-            const overdue=mn.tasks.filter(t=>!dn[t.id]&&getDue(t.due,false).label.includes("late")).length;
-            return h("button",{key:mn.id,className:"mn",onClick:()=>setSelM(i),style:{
-              width:"100%",textAlign:"left",padding:"8px 10px",borderRadius:"var(--r)",marginBottom:3,
-              background:selM===i?c.bg:"transparent",border:`1px solid ${selM===i?c.b:"transparent"}`,
-              cursor:"pointer",fontFamily:"var(--fn)",transition:"all .15s"
-            }},
+            const p=pct(mn.id,st);const c=RL[i];
+            const done2=mn.tasks.filter(t=>st[t.id]==="done").length;
+            const prog2=mn.tasks.filter(t=>st[t.id]==="progress").length;
+            const late=mn.tasks.filter(t=>st[t.id]!=="done"&&gd(t.due,st[t.id]).lb.includes("late")).length;
+            return h("button",{key:mn.id,className:"mnav",onClick:()=>setSelM(i),style:{width:"100%",textAlign:"left",padding:"12px 14px",borderRadius:r,marginBottom:4,background:selM===i?c.bg:"transparent",border:`1px solid ${selM===i?c.b:"transparent"}`,cursor:"pointer",fontFamily:fn}},
               h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
-                h("div",{style:{fontSize:9,color:c.t,fontFamily:"var(--mo)"}},`M${mn.id} · ${p}%`),
-                overdue>0&&h("span",{style:{fontSize:9,color:"var(--da)",fontFamily:"var(--mo)"}},overdue+"!")
+                h("span",{style:{fontSize:11,color:c.t,fontFamily:mo}},"M"+mn.id+" · "+p+"%"),
+                h("div",{style:{display:"flex",gap:4}},
+                  late>0&&h("span",{style:{fontSize:10,color:"var(--da)"}},late+"!"),
+                  prog2>0&&h("span",{style:{fontSize:10,color:"var(--wa)"}},prog2+"⟳")
+                )
               ),
-              h("div",{style:{fontSize:12,fontWeight:selM===i?500:400,color:selM===i?"var(--t1)":"var(--t2)",marginTop:2}},mn.title),
-              h("div",{style:{fontSize:9,color:"var(--t3)",marginTop:1}},fmtRange(mn.start,mn.end))
+              h("div",{style:{fontSize:14,fontWeight:selM===i?500:400,color:selM===i?"var(--t1)":"var(--t2)",marginTop:3}},mn.title),
+              h("div",{style:{fontSize:11,color:"var(--t3)",marginTop:2}},fr(mn.start,mn.end)),
+              h("div",{style:{display:"flex",alignItems:"center",gap:6,marginTop:5}},
+                h("div",{style:{flex:1,height:4,background:"var(--bd2)",borderRadius:2,overflow:"hidden"}},h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:2}})),
+                h("span",{style:{fontSize:10,color:"var(--t3)",fontFamily:mo,flexShrink:0}},`${done2}/${mn.tasks.length}`)
+              )
             );
           })
         ),
+        // Task list
         (()=>{
-          const mn=MO[selM];const p=pct(mn.id,dn);const c=RL[selM];
-          const d2=mn.tasks.filter(t=>dn[t.id]).length;
-          const overdue=mn.tasks.filter(t=>!dn[t.id]&&getDue(t.due,false).label.includes("late")).length;
+          const mn=MO[selM];const p=pct(mn.id,st);const c=RL[selM];
+          const done2=mn.tasks.filter(t=>st[t.id]==="done").length;
+          const prog2=mn.tasks.filter(t=>st[t.id]==="progress").length;
+          const late=mn.tasks.filter(t=>st[t.id]!=="done"&&gd(t.due,st[t.id]).lb.includes("late")).length;
           return h("div",null,
-            h("div",{style:{marginBottom:14}},
-              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}},
+            h("div",{style:{marginBottom:18}},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}},
                 h("div",null,
-                  h("p",{style:{fontSize:15,fontWeight:500,color:c.t,margin:"0 0 1px"}},mn.title),
-                  h("p",{style:{fontSize:11,color:"var(--t3)",margin:0,fontFamily:"var(--mo)"}},fmtRange(mn.start,mn.end)),
-                  h("p",{style:{fontSize:12,color:"var(--t2)",margin:"3px 0 0"}},mn.goal)
+                  h("p",{style:{fontSize:19,fontWeight:500,color:c.t,margin:"0 0 2px"}},mn.title),
+                  h("p",{style:{fontSize:13,color:"var(--t3)",margin:0,fontFamily:mo}},fr(mn.start,mn.end)),
+                  h("p",{style:{fontSize:14,color:"var(--t2)",margin:"4px 0 0"}},mn.goal)
                 ),
-                h("div",{style:{textAlign:"right"}},
-                  h("span",{style:{fontFamily:"var(--mo)",fontSize:14,fontWeight:500,color:c.t}},`${d2}/${mn.tasks.length}`),
-                  overdue>0&&h("div",{style:{fontSize:10,color:"var(--da)",fontFamily:"var(--mo)",marginTop:2}},overdue+" overdue")
+                h("div",{style:{textAlign:"right",flexShrink:0}},
+                  h("div",{style:{display:"flex",gap:12,justifyContent:"flex-end",flexWrap:"wrap"}},
+                    h("span",{style:{fontSize:14,color:"var(--su)",fontFamily:mo}},ic("ti-circle-check",{fontSize:14,marginRight:4}),done2+" done"),
+                    prog2>0&&h("span",{style:{fontSize:14,color:"var(--wa)",fontFamily:mo}},ic("ti-clock-play",{fontSize:14,marginRight:4}),prog2+" in progress"),
+                    late>0&&h("span",{style:{fontSize:14,color:"var(--da)",fontFamily:mo}},late+" overdue")
+                  )
                 )
               ),
-              h("div",{style:{height:4,background:"var(--bd2)",borderRadius:4,overflow:"hidden",marginTop:10}},
-                h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:4,transition:"width .4s"}})
+              h("div",{style:{height:6,background:"var(--bd2)",borderRadius:4,overflow:"hidden",marginTop:12}},
+                h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:4}})
               )
             ),
-            h("div",{style:{marginBottom:14}},
+            // Book cards for this month
+            (() => {
+              const bookIds=[...new Set(mn.tasks.filter(t=>t.bookId).map(t=>t.bookId))];
+              if(!bookIds.length)return null;
+              return h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12,marginBottom:18}},
+                bookIds.map(id=>h(BookCard,{key:id,bookId:id,compact:true}))
+              );
+            })(),
+            h("div",{style:{marginBottom:18}},
               mn.tasks.map(task=>{
-                const isDn=dn[task.id];
-                const ds=getDue(task.due,isDn);
-                return h("div",{key:task.id,className:"tr",onClick:()=>toggle(task.id),style:{
-                  display:"flex",alignItems:"flex-start",gap:10,padding:"10px",borderRadius:"var(--r)",marginBottom:3,
-                  cursor:"pointer",background:isDn?"var(--bg2)":"var(--bg1)",
-                  border:`1px solid ${isDn?c.b:ds.label.includes("late")?"var(--da-bd)":"var(--bd)"}`,
-                  transition:"all .15s",userSelect:"none"
-                }},
-                  h("div",{style:{width:15,height:15,borderRadius:3,border:`1.5px solid ${isDn?c.t:"var(--bd2)"}`,background:isDn?c.t:"transparent",flexShrink:0,marginTop:2,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}},
-                    isDn&&h("i",{className:"ti ti-check","aria-hidden":"true",style:{fontSize:9,color:"#fff"}})
-                  ),
+                const status=st[task.id];const ds=gd(task.due,status);
+                const isDone=status==="done";const isProg=status==="progress";
+                return h("div",{key:task.id,className:"task-r",onClick:()=>cycleStatus(task.id),style:{display:"flex",alignItems:"flex-start",gap:14,padding:16,borderRadius:r,marginBottom:6,cursor:"pointer",background:isDone?"var(--bg2)":isProg?"var(--wa-bg)":"var(--bg1)",border:`1px solid ${isDone?c.b:isProg?"var(--wa-bd)":ds.lb.includes("late")?"var(--da-bd)":"var(--bd)"}`,userSelect:"none"}},
+                  h(StatusBtn,{taskId:task.id}),
                   h("div",{style:{flex:1,minWidth:0}},
-                    h("p",{style:{fontSize:13,color:isDn?"var(--t3)":"var(--t1)",textDecoration:isDn?"line-through":"none",margin:"0 0 4px",lineHeight:1.5}},task.text),
-                    h("span",{style:{fontSize:10,color:"var(--t3)",background:"var(--bg2)",border:"1px solid var(--bd)",padding:"1px 6px",borderRadius:4}},task.tag)
+                    h("p",{style:{fontSize:15,color:isDone?"var(--t3)":"var(--t1)",textDecoration:isDone?"line-through":"none",margin:"0 0 6px",lineHeight:1.55}},task.text),
+                    h("div",{style:{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}},
+                      badge(task.tag),
+                      isProg&&h("span",{style:{fontSize:11,color:"var(--wa)",background:"var(--wa-bg)",border:"1px solid var(--wa-bd)",padding:"2px 7px",borderRadius:4,fontFamily:mo}},"in progress")
+                    ),
+                    task.bookId&&h(BookMini,{bookId:task.bookId})
                   ),
-                  h("div",{style:{flexShrink:0,textAlign:"right",marginLeft:8}},
-                    h("div",{style:{fontSize:11,color:ds.color,fontFamily:"var(--mo)",fontWeight:500}},fmtDate(task.due)),
-                    h("div",{style:{fontSize:10,color:ds.color,marginTop:1}},ds.label)
+                  h("div",{style:{flexShrink:0,textAlign:"right",marginLeft:10}},
+                    h("div",{style:{fontSize:13,color:ds.col,fontFamily:mo,fontWeight:500}},fd(task.due)),
+                    h("div",{style:{fontSize:12,color:ds.col,marginTop:2}},ds.lb)
                   )
                 );
               })
             ),
-            h("div",{style:{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:"var(--r)",padding:"11px 14px"}},
-              h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 4px",textTransform:"uppercase",letterSpacing:1}},"Milestone · "+fmtDate(mn.end)),
-              h("p",{style:{fontSize:13,color:"var(--t1)",margin:0,lineHeight:1.6}},mn.ms)
+            h("div",{style:{background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:r,padding:"16px 20px"}},
+              h("p",{style:{fontSize:12,color:"var(--t3)",margin:"0 0 6px",textTransform:"uppercase",letterSpacing:1}},"Milestone · "+fd(mn.end)),
+              h("p",{style:{fontSize:15,color:"var(--t1)",margin:0,lineHeight:1.7}},mn.ms)
             )
           );
         })()
       ),
 
       // ── QUIZ ──
-      tab==="quiz"&&h("div",{style:{maxWidth:620}},
-        h("div",{style:{marginBottom:20}},
-          h("p",{style:{fontSize:14,fontWeight:500,margin:"0 0 14px"}},"Choose a topic to test your knowledge"),
-          MO.map((mn,i)=>{
-            const c=RL[i];
-            return h("div",{key:mn.id,style:{marginBottom:14}},
-              h("p",{style:{fontSize:10,color:c.t,fontFamily:"var(--mo)",margin:"0 0 6px",textTransform:"uppercase"}},`Month ${mn.id} — ${mn.title} · `+fmtRange(mn.start,mn.end)),
-              h("div",{style:{display:"flex",flexWrap:"wrap",gap:6}},
-                mn.qz.map(topic=>h("button",{key:topic,className:"qb",onClick:()=>startQ(topic,i),
-                  style:{"--qtc":c.t,"--qbc":c.b,padding:"5px 11px",background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:"var(--r)",color:"var(--t2)",fontSize:12,cursor:"pointer",fontFamily:"var(--fn)",transition:"all .15s"}
-                },topic))
-              )
-            );
-          })
-        ),
-        qLoad&&h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:10,padding:24,textAlign:"center",color:"var(--t3)",fontFamily:"var(--mo)",fontSize:13}},"Generating question…"),
-        quiz&&!qLoad&&(quiz.err
-          ?h("div",{style:{background:"var(--da-bg)",border:"1px solid var(--da-bd)",borderRadius:"var(--r)",padding:16,color:"var(--da)",fontSize:13}},"Failed to generate — try another topic.")
-          :h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:10,padding:20}},
-            h("p",{style:{fontSize:10,color:"var(--t3)",margin:"0 0 8px",fontFamily:"var(--mo)"}},quiz.topic),
-            h("p",{style:{fontSize:14,fontWeight:500,margin:"0 0 14px",lineHeight:1.6}},quiz.question),
-            h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
-              Object.entries(quiz.options).map(([k,v])=>{
-                let bg="var(--bg2)",border="var(--bd)",col="var(--t1)";
-                if(quiz.rev){
-                  if(k===quiz.correct){bg="var(--su-bg)";border="var(--su-bd)";col="var(--su)";}
-                  else if(k===quiz.sel){bg="var(--da-bg)";border="var(--da-bd)";col="var(--da)";}
-                }
-                return h("button",{key:k,onClick:()=>ans(k),disabled:quiz.rev,style:{
-                  padding:"10px 13px",background:bg,border:`1px solid ${border}`,borderRadius:"var(--r)",
-                  color:col,fontSize:13,cursor:quiz.rev?"default":"pointer",textAlign:"left",fontFamily:"var(--fn)",transition:"all .2s"
-                }},h("span",{style:{fontFamily:"var(--mo)",fontWeight:500,marginRight:8}},k.toUpperCase()+"."),v);
-              })
-            ),
-            quiz.rev&&h("div",null,
-              h("div",{style:{marginTop:12,padding:"11px 13px",background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:"var(--r)",fontSize:13,color:"var(--t2)",lineHeight:1.6}},
-                h("span",{style:{color:"var(--su)",fontWeight:500}},"Explanation: "),quiz.explanation
+      tab==="quiz"&&h("div",null,
+        !apiKey&&noKeyBanner,
+        apiKey&&h("div",null,
+          h("p",{style:{fontSize:16,fontWeight:500,margin:"0 0 18px"}},"Choose a topic to test your knowledge"),
+          h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(380px,1fr))",gap:20,marginBottom:28}},
+            MO.map((mn,i)=>{const c=RL[i];
+              return h("div",{key:mn.id,style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:r,padding:"18px 20px"}},
+                h("p",{style:{fontSize:12,color:c.t,fontFamily:mo,margin:"0 0 10px",textTransform:"uppercase",letterSpacing:1}},`Month ${mn.id} — ${mn.title}`),
+                h("div",{style:{display:"flex",flexWrap:"wrap",gap:8}},
+                  mn.qz.map(topic=>h("button",{key:topic,className:"qbtn",onClick:()=>startQ(topic,i),style:{"--qtc":c.t,"--qbc":c.b,padding:"7px 14px",background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:r,color:"var(--t2)",fontSize:14,cursor:"pointer",fontFamily:fn}},topic))
+                )
+              );
+            })
+          ),
+          qLoad&&h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:12,padding:32,textAlign:"center",color:"var(--t3)",fontSize:15}},"Generating question…"),
+          quiz&&!qLoad&&(quiz.err
+            ?h("div",{style:{background:"var(--da-bg)",border:"1px solid var(--da-bd)",borderRadius:r,padding:"18px 22px",color:"var(--da)",fontSize:15}},quiz.msg||"Failed — try another topic.")
+            :h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:12,padding:26}},
+              h("p",{style:{fontSize:12,color:"var(--t3)",margin:"0 0 10px",fontFamily:mo}},quiz.topic),
+              h("p",{style:{fontSize:18,fontWeight:500,margin:"0 0 18px",lineHeight:1.6}},quiz.question),
+              h("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+                Object.entries(quiz.options).map(([k,v])=>{
+                  let bg="var(--bg2)",border="var(--bd)",col="var(--t1)";
+                  if(quiz.rev){if(k===quiz.correct){bg="var(--su-bg)";border="var(--su-bd)";col="var(--su)";}else if(k===quiz.sel){bg="var(--da-bg)";border="var(--da-bd)";col="var(--da)";}}
+                  return h("button",{key:k,onClick:()=>ans(k),disabled:quiz.rev,style:{padding:"14px 18px",background:bg,border:`1px solid ${border}`,borderRadius:r,color:col,fontSize:15,cursor:quiz.rev?"default":"pointer",textAlign:"left",fontFamily:fn}},
+                    h("span",{style:{fontFamily:mo,fontWeight:500,marginRight:10}},k.toUpperCase()+"."),v
+                  );
+                })
               ),
-              h("button",{className:"pb",style:{marginTop:10},onClick:()=>startQ(quiz.topic,quiz.mi)},"Next question")
+              quiz.rev&&h("div",null,
+                h("div",{style:{marginTop:16,padding:"14px 18px",background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:r,fontSize:15,color:"var(--t2)",lineHeight:1.7}},
+                  h("span",{style:{color:"var(--su)",fontWeight:500}},"Explanation: "),quiz.explanation
+                ),
+                h("button",{className:"pb",style:{marginTop:14},onClick:()=>startQ(quiz.topic,quiz.mi)},"Next question")
+              )
             )
+          ),
+          qH.length>0&&h("div",{style:{marginTop:24}},
+            h("p",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,textTransform:"uppercase",margin:"0 0 10px"}},"Recent history"),
+            qH.slice(0,6).map((q,i)=>h("div",{key:i,style:{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:"1px solid var(--bd)"}},
+              ic(`ti-${q.ok?"circle-check":"circle-x"}`,{fontSize:18,color:q.ok?"var(--su)":"var(--da)",flexShrink:0}),
+              h("span",{style:{fontSize:15,color:"var(--t2)",flex:1}},q.topic),
+              h("span",{style:{fontSize:13,color:"var(--t3)",fontFamily:mo}},`M${q.mi+1}`)
+            ))
           )
-        ),
-        qH.length>0&&h("div",{style:{marginTop:20}},
-          h("p",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mo)",textTransform:"uppercase",margin:"0 0 8px"}},"Recent history"),
-          qH.slice(0,6).map((q,i)=>h("div",{key:i,style:{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:"1px solid var(--bd)"}},
-            h("i",{className:`ti ${q.ok?"ti-circle-check":"ti-circle-x"}`,"aria-hidden":"true",style:{fontSize:15,color:q.ok?"var(--su)":"var(--da)",flexShrink:0}}),
-            h("span",{style:{fontSize:12,color:"var(--t2)",flex:1}},q.topic),
-            h("span",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mo)"}},`M${q.mi+1}`)
-          ))
         )
       ),
 
       // ── MENTOR ──
-      tab==="mentor"&&h("div",{style:{maxWidth:620}},
-        h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:10,overflow:"hidden"}},
-          h("div",{style:{padding:"11px 16px",borderBottom:"1px solid var(--bd)",display:"flex",alignItems:"center",gap:8}},
-            h("i",{className:"ti ti-school","aria-hidden":"true",style:{fontSize:15,color:"var(--ac)"}}),
-            h("span",{style:{fontSize:13,fontWeight:500}},"DE mentor"),
-            h("span",{style:{fontSize:11,color:"var(--t3)",marginLeft:"auto",fontFamily:"var(--mo)"}},`Month ${curI+1} · ${dnN}/${tot} done`)
-          ),
-          h("div",{style:{height:340,overflowY:"auto",padding:14}},
-            msgs.length===0&&h("div",{style:{color:"var(--t3)",fontSize:13,textAlign:"center",paddingTop:50}},
-              h("i",{className:"ti ti-messages","aria-hidden":"true",style:{fontSize:24,display:"block",marginBottom:8}}),
-              "Ask me anything about your DE transition. I know where you are in the learning path."
+      tab==="mentor"&&h("div",null,
+        !apiKey&&noKeyBanner,
+        apiKey&&h("div",null,
+          h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:12,overflow:"hidden"}},
+            h("div",{style:{padding:"16px 22px",borderBottom:"1px solid var(--bd)",display:"flex",alignItems:"center",gap:10}},
+              ic("ti-school",{fontSize:20,color:"var(--ac)"}),
+              h("span",{style:{fontSize:17,fontWeight:500}},"DE mentor"),
+              h("span",{style:{fontSize:14,color:"var(--t3)",marginLeft:"auto",fontFamily:mo}},`Month ${curI+1} · ${doneN} done · ${progN} in progress`)
             ),
-            msgs.map((m,i)=>h("div",{key:i,style:{marginBottom:9,display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}},
-              h("div",{style:{
-                maxWidth:"78%",padding:"9px 12px",borderRadius:9,fontSize:13,lineHeight:1.6,whiteSpace:"pre-wrap",
-                background:m.role==="user"?"#2563EB":"var(--bg2)",
-                color:m.role==="user"?"#fff":"var(--t1)",
-                border:m.role==="user"?"none":"1px solid var(--bd)"
-              }},m.content)
-            )),
-            cLoad&&h("div",{style:{color:"var(--t3)",fontSize:13,fontFamily:"var(--mo)"}},"Thinking…"),
-            h("div",{ref:endR})
+            h("div",{style:{height:"calc(100vh - 340px)",minHeight:400,overflowY:"auto",padding:20}},
+              msgs.length===0&&h("div",{style:{color:"var(--t3)",fontSize:15,textAlign:"center",paddingTop:80}},
+                ic("ti-messages",{fontSize:36,display:"block",margin:"0 auto 12px"}),
+                "Ask me anything about your DE transition.",h("br"),"I know where you are in the plan."
+              ),
+              msgs.map((m,i)=>h("div",{key:i,style:{marginBottom:12,display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}},
+                h("div",{style:{maxWidth:"80%",padding:"12px 16px",borderRadius:10,fontSize:15,lineHeight:1.65,whiteSpace:"pre-wrap",background:m.role==="user"?"#2563EB":"var(--bg2)",color:m.role==="user"?"#fff":"var(--t1)",border:m.role==="user"?"none":`1px solid var(--bd)`}},m.content)
+              )),
+              cLoad&&h("div",{style:{color:"var(--t3)",fontSize:15,padding:"6px 0"}},ic("ti-dots",{fontSize:18,marginRight:8}),"Thinking…"),
+              h("div",{ref:endR})
+            ),
+            chatErr&&h("div",{style:{padding:"12px 18px",background:"var(--da-bg)",borderTop:"1px solid var(--da-bd)",display:"flex",alignItems:"center",gap:10}},
+              ic("ti-alert-circle",{fontSize:16,color:"var(--da)",flexShrink:0}),
+              h("span",{style:{fontSize:14,color:"var(--da)",flex:1}},chatErr),
+              h("button",{onClick:()=>setCE(null),style:{border:"none",background:"transparent",color:"var(--da)",cursor:"pointer",fontSize:16,padding:0}},"✕")
+            ),
+            h("div",{style:{padding:"14px 18px",borderTop:"1px solid var(--bd)",display:"flex",gap:10}},
+              h("input",{type:"text",value:inp,onChange:e=>setInp(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}},placeholder:"Ask your mentor…",disabled:cLoad,style:{flex:1,fontSize:15}}),
+              h("button",{className:"pb",onClick:send,disabled:cLoad||!inp.trim()},cLoad?"…":"Send")
+            )
           ),
-          h("div",{style:{padding:"11px 14px",borderTop:"1px solid var(--bd)",display:"flex",gap:8}},
-            h("input",{value:inp,onChange:e=>setInp(e.target.value),onKeyDown:e=>e.key==="Enter"&&!e.shiftKey&&send(),placeholder:"Ask your mentor…"}),
-            h("button",{className:"pb",onClick:send,disabled:cLoad||!inp.trim()},"Send")
+          h("div",{style:{marginTop:14,display:"flex",flexWrap:"wrap",gap:8}},
+            ["What should I focus on this week?",`What's hardest about month ${curI+1}?`,"Am I on track for Jan 10?","What will interviewers ask me?"]
+            .map(p=>h("button",{key:p,className:"pill",onClick:()=>setInp(p),style:{padding:"8px 14px",background:"transparent",border:"1px solid var(--bd)",borderRadius:r,color:"var(--t2)",fontSize:13,cursor:"pointer",fontFamily:fn}},p))
           )
-        ),
-        h("div",{style:{marginTop:10,display:"flex",flexWrap:"wrap",gap:6}},
-          [`What should I focus on this week?`,`What's hardest about month ${curI+1}?`,"Am I on track for Jan 10?","What will interviewers ask me?"]
-            .map(p=>h("button",{key:p,className:"pi",onClick:()=>setInp(p),style:{padding:"5px 10px",background:"transparent",border:"1px solid var(--bd)",borderRadius:"var(--r)",color:"var(--t2)",fontSize:11,cursor:"pointer",fontFamily:"var(--fn)",transition:"all .15s"}},p))
         )
       )
     )
@@ -531,3 +714,5 @@ function App(){
 
 ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 </script>
+</body>
+</html>
