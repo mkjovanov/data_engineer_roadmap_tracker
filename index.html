@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Engineer Transition Tracker</title>
+  <title>DE Transition Tracker</title>
   <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
   <style>
     *{box-sizing:border-box}
@@ -26,7 +26,9 @@
     .pill:hover{background:var(--bg2)!important}
     .qbtn:hover{color:var(--qtc)!important;border-color:var(--qbc)!important}
     .status-btn{flex-shrink:0;width:22px;height:22px;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:2px}
-    .status-btn:hover{opacity:.8}
+    .status-btn:hover{opacity:.75}
+    .spin{animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
     :root,[data-theme=light]{
       --bg0:#E9ECF2;--bg1:#fff;--bg2:#F5F6FA;
       --t1:#0F1117;--t2:#52566A;--t3:#9EA4B6;
@@ -66,7 +68,6 @@
 const{useState,useEffect,useRef,useCallback}=React;
 const h=React.createElement;
 
-// ── Role colors ───────────────────────────────────────────────────────────────
 const RL=[
   {t:"var(--ac)",bg:"var(--ac-bg)",b:"var(--ac-bd)"},
   {t:"var(--pr)",bg:"var(--pr-bg)",b:"var(--pr-bd)"},
@@ -76,13 +77,11 @@ const RL=[
   {t:"var(--pr)",bg:"var(--pr-bg)",b:"var(--pr-bd)"},
 ];
 
-// ── Books ─────────────────────────────────────────────────────────────────────
 const BOOKS={
   fde:{id:"fde",title:"Fundamentals of Data Engineering",short:"FDE",author:"Reis & Housley",totalPages:400,col:"var(--ac)",colBg:"var(--ac-bg)",colBd:"var(--ac-bd)"},
   ddia:{id:"ddia",title:"Designing Data-Intensive Applications",short:"DDIA",author:"Martin Kleppmann",totalPages:562,col:"var(--pr)",colBg:"var(--pr-bg)",colBd:"var(--pr-bd)"},
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 const fd=s=>new Date(s+"T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
 const fr=(s,e)=>fd(s)+" – "+fd(e);
 function gd(due,status){
@@ -94,34 +93,58 @@ function gd(due,status){
   if(d<=7)return{col:"var(--wa)",lb:`${d}d left`};
   return{col:"var(--t3)",lb:`${d}d left`};
 }
+function timeSince(iso){
+  if(!iso)return"";
+  const d=Math.floor((Date.now()-new Date(iso))/1000);
+  if(d<10)return"just now";
+  if(d<60)return d+"s ago";
+  if(d<3600)return Math.floor(d/60)+"m ago";
+  return Math.floor(d/3600)+"h ago";
+}
 
-// ── Storage ───────────────────────────────────────────────────────────────────
 const ls=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;}};
 const ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
 
-// Migrate old boolean status → "done"/null
 function migrateStatus(saved){
-  if(!saved)return{};
-  const r={};
+  if(!saved)return{};const r={};
   for(const[k,v]of Object.entries(saved)){
-    if(v===true)r[k]="done";
-    else if(v==="done"||v==="progress")r[k]=v;
-    else r[k]=null;
+    if(v===true)r[k]="done";else if(v==="done"||v==="progress")r[k]=v;else r[k]=null;
   }
   return r;
 }
 
-// ── API ───────────────────────────────────────────────────────────────────────
+// ── GitHub API ────────────────────────────────────────────────────────────────
+function parseRepo(s){
+  const p=(s||"").trim().split("/");
+  return p.length===2&&p[0]&&p[1]?{owner:p[0],repo:p[1]}:null;
+}
+async function ghGet(token,owner,repo,path){
+  const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`,{
+    headers:{"Authorization":`Bearer ${token}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}
+  });
+  if(res.status===404)return null;
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||`GitHub ${res.status}`);}
+  const data=await res.json();
+  return{content:JSON.parse(atob(data.content.replace(/\s/g,""))),sha:data.sha};
+}
+async function ghPut(token,owner,repo,path,content,sha){
+  const body={message:"Update DE tracker state",content:btoa(JSON.stringify(content,null,2))};
+  if(sha)body.sha=sha;
+  const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`,{
+    method:"PUT",
+    headers:{"Authorization":`Bearer ${token}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||`GitHub ${res.status}`);}
+  return(await res.json()).content.sha;
+}
+
+// ── Anthropic API ─────────────────────────────────────────────────────────────
 async function callClaude(messages,system,apiKey){
-  if(!apiKey)throw new Error("No API key set — click Settings to add yours");
+  if(!apiKey)throw new Error("No API key — click Settings");
   const res=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-api-key":apiKey,
-      "anthropic-version":"2023-06-01",
-      "anthropic-dangerous-direct-browser-access":"true"
-    },
+    headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system,messages})
   });
   if(!res.ok){let m=`HTTP ${res.status}`;try{const j=await res.json();m=j?.error?.message||m;}catch{}throw new Error(m);}
@@ -143,8 +166,7 @@ const MO=[
     {id:"1-5",due:"2026-07-28",text:"SQL: learn to read query execution plans (EXPLAIN output)",tag:"SQL"},
     {id:"1-6",due:"2026-08-04",text:"Dimensional modeling: star schema, SCDs, fact vs dimension tables",tag:"Modeling"},
     {id:"1-7",due:"2026-08-10",text:"Understand and explain OLTP vs OLAP design differences",tag:"Modeling"},
-   ],
-   ms:"You can explain the difference between a data lake, data warehouse, and lakehouse — and why each exists.",
+   ],ms:"You can explain the difference between a data lake, data warehouse, and lakehouse.",
    qz:["Data lifecycle stages","SQL window functions","Dimensional modeling","OLTP vs OLAP"]},
   {id:2,title:"Core tooling",goal:"Get hands dirty with the actual stack",start:"2026-08-11",end:"2026-09-10",
    tasks:[
@@ -157,8 +179,7 @@ const MO=[
     {id:"2-7",due:"2026-09-05",text:"Build a multi-model dbt project with sources, tests, and docs",tag:"dbt"},
     {id:"2-8",due:"2026-09-08",text:"Set up Azure free-tier and get comfortable with ADLS Gen2",tag:"Azure"},
     {id:"2-9",due:"2026-09-10",text:"Create a basic Azure Data Factory copy pipeline",tag:"Azure"},
-   ],
-   ms:"You have dbt running locally and can build a multi-model transformation from a raw CSV source.",
+   ],ms:"You have dbt running locally and can build a multi-model transformation from a raw CSV source.",
    qz:["Parquet vs CSV","dbt core concepts","dbt ref() and sources","Azure ADLS Gen2"]},
   {id:3,title:"Pipeline thinking",goal:"Connect the pieces end to end",start:"2026-09-11",end:"2026-10-10",
    tasks:[
@@ -170,8 +191,7 @@ const MO=[
     {id:"3-6",due:"2026-10-02",text:"Add retry logic and failure alerting to the DAG",tag:"Orchestration"},
     {id:"3-7",due:"2026-10-06",text:"Start DataTalks.Club DE Zoomcamp — Docker and Terraform modules",tag:"Course"},
     {id:"3-8",due:"2026-10-10",text:"Complete Zoomcamp GCP/BigQuery module",tag:"Course"},
-   ],
-   ms:"A pipeline runs on a schedule, ingests real data, transforms with dbt, and doesn't fail silently.",
+   ],ms:"A pipeline runs on a schedule, ingests real data, transforms with dbt, and doesn't fail silently.",
    qz:["DDIA storage engines","Airflow DAG concepts","Pipeline reliability","Orchestration fundamentals"]},
   {id:4,title:"Portfolio project",goal:"Build the thing you'll talk about in interviews",start:"2026-10-11",end:"2026-11-10",
    tasks:[
@@ -183,8 +203,7 @@ const MO=[
     {id:"4-6",due:"2026-11-03",text:"Serve: build a simple dashboard in Metabase or Jupyter",tag:"Build"},
     {id:"4-7",due:"2026-11-07",text:"Write README with architecture diagram and design decisions",tag:"Docs"},
     {id:"4-8",due:"2026-11-10",text:"Publish to GitHub with clean commit history",tag:"Docs"},
-   ],
-   ms:"You can walk someone through the project end to end and explain every design decision.",
+   ],ms:"You can walk someone through the project end to end and explain every design decision.",
    qz:["Data lake partitioning","dbt project structure","Pipeline design trade-offs","Data modeling for analytics"]},
   {id:5,title:"Depth + Spark",goal:"Handle the scale questions",start:"2026-11-11",end:"2026-12-10",
    tasks:[
@@ -196,8 +215,7 @@ const MO=[
     {id:"5-6",due:"2026-12-04",text:"DDIA: distributed transactions chapter",tag:"Reading",bookId:"ddia"},
     {id:"5-7",due:"2026-12-07",text:"Study for DP-900 (Azure Data Fundamentals) as a warmup",tag:"Cert"},
     {id:"5-8",due:"2026-12-10",text:"Start DP-203 (Data Engineering on Azure) study guide",tag:"Cert"},
-   ],
-   ms:"You can explain what happens when a Spark join causes a shuffle, and why you'd avoid it.",
+   ],ms:"You can explain what happens when a Spark join causes a shuffle, and why you'd avoid it.",
    qz:["Spark shuffles and partitioning","DDIA distributed concepts","Stream vs batch processing","Azure DP-203 topics"]},
   {id:6,title:"Job readiness",goal:"Translate skills into opportunities",start:"2026-12-11",end:"2027-01-10",
    tasks:[
@@ -209,28 +227,28 @@ const MO=[
     {id:"6-6",due:"2027-01-05",text:"Add Terraform IaC to provision your Azure resources",tag:"Extend"},
     {id:"6-7",due:"2027-01-08",text:"Apply to 10+ DE, analytics engineer, or data platform roles",tag:"Apply"},
     {id:"6-8",due:"2027-01-10",text:"Post about your project on LinkedIn",tag:"Apply"},
-   ],
-   ms:"Portfolio published, DP-203 passed, and 10+ applications submitted.",
+   ],ms:"Portfolio published, DP-203 passed, and 10+ applications submitted.",
    qz:["DE system design","Data quality and testing","CI/CD for data pipelines","Terraform for data infra"]},
 ];
 
 function pct(mid,st){const m=MO.find(x=>x.id===mid);return m?Math.round(m.tasks.filter(t=>st[t.id]==="done").length/m.tasks.length*100):0;}
-function getCur(st){for(let i=MO.length-1;i>=0;i--)if(pct(MO[i].id,st)>0||MO[i].tasks.some(t=>st[t.id]==="progress"))return i;return 0;}
+function getCur(st){
+  for(let i=MO.length-1;i>=0;i--)
+    if(pct(MO[i].id,st)>0||MO[i].tasks.some(t=>st[t.id]==="progress"))return i;
+  return 0;
+}
 
 // ── App ───────────────────────────────────────────────────────────────────────
 function App(){
   const[theme,setTheme]=useState(()=>ls("de_theme")||(window.matchMedia?.("(prefers-color-scheme:dark)").matches?"dark":"light"));
   const[tab,setTab]=useState("dashboard");
-  // st = task status map: {taskId: "done"|"progress"|null}
   const[st,setSt]=useState(()=>migrateStatus(ls("de_status")||ls("de_prog")||{}));
   const[selM,setSelM]=useState(0);
   const[apiKey,setApiKey]=useState(()=>ls("de_apikey")||"");
   const[keyInp,setKeyInp]=useState("");
   const[showSettings,setShowSettings]=useState(false);
-  // bp = book pages: {bookId: currentPage}
   const[bp,setBp]=useState(()=>ls("de_books")||{});
-  // bpInp = local input state for page editors: {bookId: string}
-  const[bpInp,setBpInp]=useState({});
+  const[bpInp,setBpInp]=useState(()=>{const i={};Object.keys(BOOKS).forEach(id=>{i[id]=String(ls("de_books")?.[id]||0);});return i;});
   const[quiz,setQuiz]=useState(null);
   const[qLoad,setQL]=useState(false);
   const[qH,setQH]=useState(()=>ls("de_qhist")||[]);
@@ -238,37 +256,120 @@ function App(){
   const[inp,setInp]=useState("");
   const[cLoad,setCL]=useState(false);
   const[chatErr,setCE]=useState(null);
+
+  // GitHub sync state
+  const[gh,setGh]=useState(()=>ls("de_gh")||{enabled:false,token:"",repo:"",path:"de-tracker-state.json"});
+  const[ghInp,setGhInp]=useState({token:"",repo:"",path:"de-tracker-state.json"});
+  const[sync,setSync]=useState({status:"idle",lastSync:null,error:null}); // idle|syncing|ok|error
+
   const endR=useRef(null);
+  const ghTimer=useRef(null);
+  // Refs so debounced save always has fresh values
+  const stRef=useRef(st);const bpRef=useRef(bp);const qHRef=useRef(qH);const ghRef=useRef(gh);
+  useEffect(()=>{stRef.current=st;},[st]);
+  useEffect(()=>{bpRef.current=bp;},[bp]);
+  useEffect(()=>{qHRef.current=qH;},[qH]);
+  useEffect(()=>{ghRef.current=gh;},[gh]);
 
   useEffect(()=>{document.documentElement.setAttribute("data-theme",theme);},[theme]);
   useEffect(()=>{endR.current?.scrollIntoView({behavior:"smooth"});},[msgs,cLoad]);
-  // Sync bpInp with bp on load
+
+  // ── GitHub sync helpers ──
+  function buildPayload(){
+    return{
+      version:1,
+      lastUpdated:new Date().toISOString(),
+      taskStatus:stRef.current,
+      bookProgress:bpRef.current,
+      quizHistory:qHRef.current.slice(0,50),
+    };
+  }
+
+  async function doGhSave(){
+    const cfg=ghRef.current;
+    if(!cfg.enabled||!cfg.token||!cfg.repo)return;
+    const parsed=parseRepo(cfg.repo);
+    if(!parsed)return;
+    setSync(s=>({...s,status:"syncing"}));
+    try{
+      const existing=await ghGet(cfg.token,parsed.owner,parsed.repo,cfg.path);
+      await ghPut(cfg.token,parsed.owner,parsed.repo,cfg.path,buildPayload(),existing?.sha);
+      setSync({status:"ok",lastSync:new Date().toISOString(),error:null});
+    }catch(e){
+      console.error("GitHub save:",e);
+      setSync(s=>({...s,status:"error",error:e.message}));
+    }
+  }
+
+  function scheduleGhSave(){
+    if(!ghRef.current.enabled||!ghRef.current.token||!ghRef.current.repo)return;
+    if(ghTimer.current)clearTimeout(ghTimer.current);
+    setSync(s=>s.status!=="syncing"?{...s,status:"pending"}:s);
+    ghTimer.current=setTimeout(doGhSave,2500);
+  }
+
+  async function pullFromGitHub(cfg){
+    const c=cfg||ghRef.current;
+    if(!c.enabled||!c.token||!c.repo)return;
+    const parsed=parseRepo(c.repo);if(!parsed)return;
+    setSync(s=>({...s,status:"syncing"}));
+    try{
+      const result=await ghGet(c.token,parsed.owner,parsed.repo,c.path);
+      if(result){
+        const{content}=result;
+        if(content.taskStatus){const m=migrateStatus(content.taskStatus);setSt(m);ss("de_status",m);}
+        if(content.bookProgress){
+          setBp(content.bookProgress);ss("de_books",content.bookProgress);
+          const i={};Object.keys(BOOKS).forEach(id=>{i[id]=String(content.bookProgress[id]||0);});
+          setBpInp(i);
+        }
+        if(content.quizHistory){setQH(content.quizHistory);ss("de_qhist",content.quizHistory);}
+      }
+      setSync({status:"ok",lastSync:new Date().toISOString(),error:null});
+    }catch(e){
+      console.error("GitHub pull:",e);
+      setSync({status:"error",lastSync:null,error:e.message});
+    }
+  }
+
+  // Load from GitHub on mount if configured
   useEffect(()=>{
-    const init={};
-    Object.keys(BOOKS).forEach(id=>{init[id]=String(bp[id]||0);});
-    setBpInp(init);
+    if(gh.enabled&&gh.token&&gh.repo)pullFromGitHub(gh);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
+  // Auto-save to GitHub when st/bp/qH change (skip first render)
+  const firstRender=useRef(true);
+  useEffect(()=>{
+    if(firstRender.current){firstRender.current=false;return;}
+    scheduleGhSave();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[st,bp,qH]);
+
+  // ── State mutators ──
   const cycleStatus=useCallback(id=>{
     setSt(prev=>{
       const cur=prev[id];
       const next=cur==="done"?null:cur==="progress"?"done":"progress";
-      const n={...prev,[id]:next};
-      ss("de_status",n);
-      return n;
+      const n={...prev,[id]:next};ss("de_status",n);return n;
     });
   },[]);
 
   const updateBp=useCallback((bookId,rawVal)=>{
-    const book=BOOKS[bookId];
-    const val=Math.min(book.totalPages,Math.max(0,parseInt(rawVal)||0));
+    const val=Math.min(BOOKS[bookId].totalPages,Math.max(0,parseInt(rawVal)||0));
     setBp(prev=>{const n={...prev,[bookId]:val};ss("de_books",n);return n;});
     setBpInp(prev=>({...prev,[bookId]:String(val)}));
   },[]);
 
   const toggleTheme=()=>setTheme(t=>{const n=t==="dark"?"light":"dark";ss("de_theme",n);return n;});
-  const saveKey=()=>{const k=keyInp.trim();if(k){setApiKey(k);ss("de_apikey",k);setKeyInp("");setShowSettings(false);}};
-  const clearKey=()=>{setApiKey("");ss("de_apikey","");};
+  const saveApiKey=()=>{const k=keyInp.trim();if(k){setApiKey(k);ss("de_apikey",k);setKeyInp("");}};
+  const clearApiKey=()=>{setApiKey("");ss("de_apikey","");};
+  const saveGhSettings=()=>{
+    const newGh={enabled:true,token:ghInp.token.trim(),repo:ghInp.repo.trim(),path:ghInp.path.trim()||"de-tracker-state.json"};
+    setGh(newGh);ss("de_gh",newGh);
+    pullFromGitHub(newGh);
+  };
+  const disableGh=()=>{const n={...gh,enabled:false};setGh(n);ss("de_gh",n);setSync({status:"idle",lastSync:null,error:null});};
 
   const curI=getCur(st),cm=MO[curI],cr=RL[curI];
   const tot=MO.reduce((a,m)=>a+m.tasks.length,0);
@@ -281,7 +382,7 @@ function App(){
     setQL(true);setQuiz(null);
     try{
       const txt=await callClaude([{role:"user",content:`Quiz on "${topic}" for SWE→DE learner month ${mi+1} (${MO[mi].title}). Return ONLY valid JSON:\n{"question":"...","options":{"a":"...","b":"...","c":"...","d":"..."},"correct":"a","explanation":"..."}`}],
-        "Return ONLY valid JSON. No markdown, no code fences, no preamble.",apiKey);
+        "Return ONLY valid JSON. No markdown.",apiKey);
       setQuiz({...JSON.parse(txt.replace(/```json|```/g,"").trim()),topic,mi,sel:null,rev:false});
     }catch(e){console.error(e);setQuiz({err:true,msg:e.message});}
     finally{setQL(false);}
@@ -292,14 +393,12 @@ function App(){
     setQuiz(q=>({...q,sel:k,rev:true}));
   }
   async function send(){
-    const text=inp.trim();
-    if(!text||cLoad)return;
-    setCE(null);
-    const um={role:"user",content:text};
+    const text=inp.trim();if(!text||cLoad)return;
+    setCE(null);const um={role:"user",content:text};
     setMsgs(prev=>[...prev,um]);setInp("");setCL(true);
     try{
       const done=MO.flatMap(m=>m.tasks.filter(t=>st[t.id]==="done").map(t=>t.text));
-      const sys=`You are Marko's Data Engineering mentor. SWE transitioning to DE, month ${curI+1}/6 (${cm.title}). Done: ${doneN}/${tot} tasks, ${progN} in progress. Recent completions: ${done.slice(-4).join("; ")||"none"}. Plan ends Jan 10 2027. Direct, technical, max 3 short paragraphs.`;
+      const sys=`You are Marko's DE mentor. SWE→DE transition, month ${curI+1}/6 (${cm.title}). ${doneN} done, ${progN} in progress out of ${tot} tasks. Recent: ${done.slice(-4).join("; ")||"none"}. Plan ends Jan 10 2027. Direct, technical, max 3 paragraphs.`;
       const reply=await callClaude([...msgs,um],sys,apiKey);
       setMsgs(prev=>[...prev,{role:"assistant",content:reply}]);
     }catch(e){console.error(e);setCE(e.message);setMsgs(prev=>prev.slice(0,-1));setInp(text);}
@@ -310,95 +409,95 @@ function App(){
   const fn="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif";
   const r="9px";
   const ic=(cls,s={})=>h("i",{className:`ti ${cls}`,"aria-hidden":"true",style:s});
-  const badge=txt=>h("span",{style:{fontSize:12,color:"var(--t3)",background:"var(--bg2)",border:"1px solid var(--bd)",padding:"2px 8px",borderRadius:5,lineHeight:1}},txt);
+  const badge=txt=>h("span",{style:{fontSize:12,color:"var(--t3)",background:"var(--bg2)",border:"1px solid var(--bd)",padding:"2px 8px",borderRadius:5}},txt);
 
-  // ── Status indicator (tri-state clickable) ──
-  function StatusBtn({taskId}){
-    const status=st[taskId];
-    let bgColor,borderColor,content;
-    if(status==="done"){
-      bgColor="var(--su)";borderColor="var(--su)";
-      content=ic("ti-check",{fontSize:12,color:"#fff"});
-    }else if(status==="progress"){
-      bgColor="var(--wa-bg)";borderColor="var(--wa)";
-      content=h("div",{style:{width:10,height:3,background:"var(--wa)",borderRadius:2}});
-    }else{
-      bgColor="transparent";borderColor="var(--bd2)";content=null;
-    }
-    return h("div",{
-      className:"status-btn",
-      onClick:e=>{e.stopPropagation();cycleStatus(taskId);},
-      title:`Click to cycle: todo → in progress → done (currently: ${status||"todo"})`,
-      style:{background:bgColor,border:`1.5px solid ${borderColor}`}
-    },content);
-  }
-
-  // ── Book progress mini widget (inline in task row) ──
-  function BookMini({bookId}){
-    const book=BOOKS[bookId];
-    const pages=bp[bookId]||0;
-    const pct2=Math.round(pages/book.totalPages*100);
-    return h("div",{style:{display:"flex",alignItems:"center",gap:8,marginTop:7,paddingTop:7,borderTop:"1px solid var(--bd)"}},
-      h("div",{style:{fontSize:12,color:book.col,fontFamily:mo,flexShrink:0,fontWeight:500}},book.short),
-      h("div",{style:{flex:1,height:5,background:"var(--bd2)",borderRadius:3,overflow:"hidden"}},
-        h("div",{style:{width:`${pct2}%`,height:"100%",background:book.col,borderRadius:3,transition:"width .3s"}})
-      ),
-      h("span",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,flexShrink:0}},`p.${pages}/${book.totalPages}`),
-      h("span",{style:{fontSize:11,color:book.col,fontFamily:mo,flexShrink:0}},pct2+"%")
+  // Sync badge for header
+  function SyncBadge(){
+    if(!gh.enabled)return null;
+    const{status,lastSync,error}=sync;
+    if(status==="syncing"||status==="pending")return h("div",{style:{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"var(--wa)"}},
+      h("i",{className:"ti ti-cloud-upload spin","aria-hidden":"true",style:{fontSize:14}}),
+      h("span",null,status==="pending"?"pending…":"saving…")
+    );
+    if(status==="ok")return h("div",{style:{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"var(--su)",cursor:"pointer"},onClick:doGhSave,title:"Click to force sync"},
+      ic("ti-cloud-check",{fontSize:14}),
+      h("span",null,"synced "+timeSince(lastSync))
+    );
+    if(status==="error")return h("div",{style:{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"var(--da)",cursor:"pointer"},onClick:doGhSave,title:error||"Unknown error — click to retry"},
+      ic("ti-cloud-x",{fontSize:14}),
+      h("span",null,"sync error · retry")
+    );
+    return h("div",{style:{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"var(--t3)"}},
+      ic("ti-cloud",{fontSize:14}),"GitHub ready"
     );
   }
 
-  // ── Book editor card (dashboard + tasks) ──
+  function StatusBtn({taskId}){
+    const status=st[taskId];
+    let bg,border,content;
+    if(status==="done"){bg="var(--su)";border="var(--su)";content=ic("ti-check",{fontSize:12,color:"#fff"});}
+    else if(status==="progress"){bg="var(--wa-bg)";border="var(--wa)";content=h("div",{style:{width:10,height:3,background:"var(--wa)",borderRadius:2}});}
+    else{bg="transparent";border="var(--bd2)";content=null;}
+    return h("div",{className:"status-btn",onClick:e=>{e.stopPropagation();cycleStatus(taskId);},
+      title:`Status: ${status||"todo"} — click to cycle`,style:{background:bg,border:`1.5px solid ${border}`}},content);
+  }
+
+  function BookMini({bookId}){
+    const book=BOOKS[bookId];const pages=bp[bookId]||0;const pct2=Math.round(pages/book.totalPages*100);
+    return h("div",{style:{display:"flex",alignItems:"center",gap:8,marginTop:7,paddingTop:7,borderTop:"1px solid var(--bd)"}},
+      h("span",{style:{fontSize:12,color:book.col,fontFamily:mo,flexShrink:0,fontWeight:500}},book.short),
+      h("div",{style:{flex:1,height:5,background:"var(--bd2)",borderRadius:3,overflow:"hidden"}},
+        h("div",{style:{width:`${pct2}%`,height:"100%",background:book.col,borderRadius:3}})
+      ),
+      h("span",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,flexShrink:0}},`p.${pages}/${book.totalPages}`),
+      h("span",{style:{fontSize:11,color:book.col,fontFamily:mo,marginLeft:2}},pct2+"%")
+    );
+  }
+
   function BookCard({bookId,compact=false}){
-    const book=BOOKS[bookId];
-    const pages=bp[bookId]||0;
-    const pct2=Math.round(pages/book.totalPages*100);
+    const book=BOOKS[bookId];const pages=bp[bookId]||0;const pct2=Math.round(pages/book.totalPages*100);
     const localVal=bpInp[bookId]??String(pages);
-    const commit=val=>{updateBp(bookId,val);};
     return h("div",{style:{background:"var(--bg1)",border:`1px solid ${book.colBd}`,borderRadius:r,padding:compact?"16px 18px":"20px 22px"}},
-      h("div",{style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:compact?8:12}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:compact?8:12}},
         h("div",null,
-          h("p",{style:{fontSize:compact?13:15,fontWeight:500,color:book.col,margin:"0 0 2px"}},book.short),
-          h("p",{style:{fontSize:compact?11:12,color:"var(--t3)",margin:0}}),
-          h("p",{style:{fontSize:compact?11:12,color:"var(--t3)",margin:0}},book.author+" · "+book.totalPages+" pages")
+          h("p",{style:{fontSize:compact?14:16,fontWeight:500,color:book.col,margin:"0 0 2px"}},book.short),
+          h("p",{style:{fontSize:12,color:"var(--t3)",margin:0}},book.author+" · "+book.totalPages+" pages")
         ),
-        h("span",{style:{fontSize:compact?20:26,fontWeight:500,color:book.col,fontFamily:mo}},pct2+"%")
+        h("span",{style:{fontSize:compact?20:28,fontWeight:500,color:book.col,fontFamily:mo}},pct2+"%")
       ),
       h("div",{style:{height:compact?6:8,background:"var(--bd2)",borderRadius:4,overflow:"hidden",marginBottom:compact?12:16}},
         h("div",{style:{width:`${pct2}%`,height:"100%",background:book.col,borderRadius:4,transition:"width .3s"}})
       ),
       h("div",{style:{display:"flex",alignItems:"center",gap:8}},
-        h("button",{className:"icbtn",onClick:()=>commit(Math.max(0,pages-10)),title:"-10 pages"},ic("ti-minus",{fontSize:14})),
-        h("input",{
-          type:"number",min:0,max:book.totalPages,
-          value:localVal,
+        h("button",{className:"icbtn",onClick:()=>updateBp(bookId,Math.max(0,pages-10)),title:"-10 pages"},ic("ti-minus",{fontSize:14})),
+        h("input",{type:"number",min:0,max:book.totalPages,value:localVal,
           onChange:e=>setBpInp(prev=>({...prev,[bookId]:e.target.value})),
-          onBlur:e=>commit(e.target.value),
-          onKeyDown:e=>e.key==="Enter"&&commit(e.target.value),
-          style:{borderColor:book.colBd}
-        }),
-        h("button",{className:"icbtn",onClick:()=>commit(pages+10),title:"+10 pages"},ic("ti-plus",{fontSize:14})),
+          onBlur:e=>updateBp(bookId,e.target.value),
+          onKeyDown:e=>e.key==="Enter"&&updateBp(bookId,e.target.value),
+          style:{borderColor:book.colBd}}),
+        h("button",{className:"icbtn",onClick:()=>updateBp(bookId,pages+10),title:"+10 pages"},ic("ti-plus",{fontSize:14})),
         h("span",{style:{fontSize:14,color:"var(--t2)"}},`/ ${book.totalPages} pages`),
-        pages===book.totalPages&&h("span",{style:{fontSize:12,color:"var(--su)",fontFamily:mo,marginLeft:4}},"✓ finished!")
+        pages===book.totalPages&&h("span",{style:{fontSize:12,color:"var(--su)",fontFamily:mo}},"✓ finished!")
       )
     );
   }
 
   const noKeyBanner=h("div",{style:{padding:"20px 24px",background:"var(--wa-bg)",border:"1px solid var(--wa-bd)",borderRadius:r,fontSize:15,color:"var(--wa)",marginBottom:20}},
-    h("p",{style:{margin:"0 0 8px",fontWeight:500,fontSize:16}},"API key required"),
-    "The Quiz and Mentor features use the Anthropic API. Click ",h("strong",null,"Settings")," to enter your key."
+    h("p",{style:{margin:"0 0 8px",fontWeight:500}},"API key required for Quiz & Mentor"),
+    "Click ",h("strong",null,"Settings")," in the top-right and enter your Anthropic key."
   );
 
   return h("div",{"data-theme":theme,style:{background:"var(--bg0)",minHeight:"100vh",fontFamily:fn,color:"var(--t1)",fontSize:16}},
 
-    // HEADER
+    // ── HEADER ──
     h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 32px",background:"var(--bg1)",borderBottom:"1px solid var(--bd)",position:"sticky",top:0,zIndex:10}},
       h("div",{style:{display:"flex",alignItems:"center",gap:12}},
         ic("ti-database",{fontSize:22,color:"var(--ac)"}),
         h("span",{style:{fontWeight:500,fontSize:19}},"DE transition tracker"),
         h("span",{style:{fontSize:13,color:"var(--t3)",fontFamily:mo}},"SWE → DE")
       ),
-      h("div",{style:{display:"flex",alignItems:"center",gap:10}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:14}},
+        h(SyncBadge),
         h("div",{style:{display:"flex",alignItems:"center",gap:8}},
           h("div",{style:{width:110,height:5,background:"var(--bd2)",borderRadius:4,overflow:"hidden"}},
             h("div",{style:{width:`${ov}%`,height:"100%",background:"#2563EB",borderRadius:4}})
@@ -406,8 +505,8 @@ function App(){
           h("span",{style:{fontSize:13,color:"var(--t2)",fontFamily:mo}},ov+"%")
         ),
         progN>0&&h("span",{style:{fontSize:12,color:"var(--wa)",background:"var(--wa-bg)",border:"1px solid var(--wa-bd)",padding:"3px 8px",borderRadius:5,fontFamily:mo}},progN+" in progress"),
-        h("button",{className:"sb",onClick:()=>{setShowSettings(s=>!s);setKeyInp(apiKey);},style:{display:"flex",alignItems:"center",gap:6}},
-          ic(apiKey?"ti-key":"ti-key-off",{fontSize:15}),"Settings"
+        h("button",{className:"sb",onClick:()=>{setShowSettings(s=>!s);setGhInp({token:gh.token,repo:gh.repo,path:gh.path||"de-tracker-state.json"});setKeyInp(apiKey);},style:{display:"flex",alignItems:"center",gap:6}},
+          ic("ti-settings",{fontSize:15}),"Settings"
         ),
         h("button",{className:"sb",onClick:toggleTheme,style:{display:"flex",alignItems:"center",gap:6}},
           ic(theme==="dark"?"ti-sun":"ti-moon",{fontSize:15}),theme==="dark"?"Light":"Dark"
@@ -415,16 +514,46 @@ function App(){
       )
     ),
 
-    // SETTINGS
-    showSettings&&h("div",{style:{padding:"16px 32px",background:"var(--bg2)",borderBottom:"1px solid var(--bd)",display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}},
-      h("span",{style:{fontSize:14,color:"var(--t2)",flexShrink:0}},"Anthropic API key"),
-      h("input",{type:"password",value:keyInp,onChange:e=>setKeyInp(e.target.value),onKeyDown:e=>e.key==="Enter"&&saveKey(),placeholder:"sk-ant-api03-...",style:{flex:1,minWidth:240}}),
-      h("button",{className:"pb",onClick:saveKey},"Save"),
-      apiKey&&h("button",{className:"sb",onClick:clearKey},"Clear"),
-      h("span",{style:{fontSize:12,color:"var(--t3)"}},"Stored in localStorage only · sent only to api.anthropic.com")
+    // ── SETTINGS PANEL ──
+    showSettings&&h("div",{style:{padding:"20px 32px",background:"var(--bg2)",borderBottom:"1px solid var(--bd)",display:"flex",flexDirection:"column",gap:16}},
+      // AI key
+      h("div",null,
+        h("p",{style:{fontSize:13,color:"var(--t3)",margin:"0 0 8px",textTransform:"uppercase",letterSpacing:1}},"AI features (Quiz & Mentor)"),
+        h("div",{style:{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}},
+          h("input",{type:"password",value:keyInp,onChange:e=>setKeyInp(e.target.value),onKeyDown:e=>e.key==="Enter"&&saveApiKey(),placeholder:"Anthropic API key · sk-ant-...",style:{flex:1,minWidth:220}}),
+          h("button",{className:"pb",onClick:saveApiKey},"Save key"),
+          apiKey&&h("button",{className:"sb",onClick:clearApiKey},"Clear"),
+          apiKey&&h("span",{style:{fontSize:12,color:"var(--su)"}},ic("ti-circle-check",{fontSize:12,marginRight:4}),"Key saved")
+        )
+      ),
+      // GitHub sync
+      h("div",{style:{borderTop:"1px solid var(--bd)",paddingTop:16}},
+        h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}},
+          h("p",{style:{fontSize:13,color:"var(--t3)",margin:0,textTransform:"uppercase",letterSpacing:1}},"GitHub sync — persists state.json to your repo"),
+          gh.enabled&&h("button",{className:"sb",style:{fontSize:12,padding:"5px 10px"},onClick:disableGh},"Disable")
+        ),
+        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr auto auto",gap:10,alignItems:"flex-end"}},
+          h("div",null,
+            h("p",{style:{fontSize:12,color:"var(--t2)",margin:"0 0 5px"}},"Personal Access Token"),
+            h("input",{type:"password",value:ghInp.token,onChange:e=>setGhInp(p=>({...p,token:e.target.value})),placeholder:"github_pat_..."})
+          ),
+          h("div",null,
+            h("p",{style:{fontSize:12,color:"var(--t2)",margin:"0 0 5px"}},"Repository"),
+            h("input",{type:"text",value:ghInp.repo,onChange:e=>setGhInp(p=>({...p,repo:e.target.value})),placeholder:"owner/repo-name"})
+          ),
+          h("div",null,
+            h("p",{style:{fontSize:12,color:"var(--t2)",margin:"0 0 5px"}},"File path in repo"),
+            h("input",{type:"text",value:ghInp.path,onChange:e=>setGhInp(p=>({...p,path:e.target.value})),placeholder:"de-tracker-state.json"})
+          ),
+          h("button",{className:"pb",style:{whiteSpace:"nowrap"},onClick:saveGhSettings,disabled:!ghInp.token||!ghInp.repo},"Save & pull"),
+          gh.enabled&&h("button",{className:"sb",style:{whiteSpace:"nowrap"},onClick:doGhSave},"Push now")
+        ),
+        sync.error&&h("p",{style:{fontSize:13,color:"var(--da)",margin:"8px 0 0"}},ic("ti-alert-circle",{fontSize:13,marginRight:4}),sync.error),
+        h("p",{style:{fontSize:12,color:"var(--t3)",margin:"8px 0 0"}},"Token needs ",h("code",null,"repo")," or ",h("code",null,"public_repo")," scope. State auto-saves 2.5s after any change and is readable JSON in your repo.")
+      )
     ),
 
-    // TABS
+    // ── TABS ──
     h("div",{style:{display:"flex",borderBottom:"1px solid var(--bd)",padding:"0 32px",background:"var(--bg1)"}},
       [{id:"dashboard",ic:"ti-layout-dashboard",lb:"Dashboard"},{id:"tasks",ic:"ti-checklist",lb:"Tasks"},{id:"quiz",ic:"ti-brain",lb:"Quiz"},{id:"mentor",ic:"ti-message-2",lb:"Mentor"}]
       .map(t=>h("button",{key:t.id,className:"tab-b",onClick:()=>setTab(t.id),style:{display:"flex",alignItems:"center",gap:8,padding:"14px 22px",border:"none",background:"transparent",cursor:"pointer",color:tab===t.id?"var(--ac)":"var(--t2)",borderBottom:`2px solid ${tab===t.id?"var(--ac)":"transparent"}`,fontSize:15,fontWeight:tab===t.id?500:400,fontFamily:fn}},
@@ -432,12 +561,11 @@ function App(){
       ))
     ),
 
-    // CONTENT
+    // ── CONTENT ──
     h("div",{style:{padding:"28px 32px",maxWidth:1100,margin:"0 auto"}},
 
-      // ── DASHBOARD ──
+      // ─── DASHBOARD ───
       tab==="dashboard"&&h("div",null,
-        // Pipeline
         h("div",{style:{marginBottom:24}},
           h("p",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,textTransform:"uppercase",letterSpacing:2,margin:"0 0 14px"}},"6-month pipeline · Jul 11, 2026 – Jan 10, 2027"),
           h("div",{style:{display:"flex",overflowX:"auto",paddingBottom:4}},
@@ -462,32 +590,25 @@ function App(){
             })
           )
         ),
-
-        // Stats
         h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,minmax(0,1fr))",gap:14,marginBottom:24}},
-          [
-            {lb:"Done",val:`${doneN}/${tot}`,col:"var(--su)",ic:"ti-circle-check"},
-            {lb:"In progress",val:String(progN),col:"var(--wa)",ic:"ti-clock-play"},
-            {lb:"Next deadline",val:nextDl?fd(nextDl.due):"All done!",col:nextDl?gd(nextDl.due,st[nextDl.id]).col:"var(--su)",ic:"ti-calendar"},
-            {lb:"Overall",val:ov+"%",col:"var(--ac)",ic:"ti-chart-bar"},
+          [{lb:"Done",val:`${doneN}/${tot}`,col:"var(--su)",ic2:"ti-circle-check"},
+           {lb:"In progress",val:String(progN),col:"var(--wa)",ic2:"ti-clock-play"},
+           {lb:"Next deadline",val:nextDl?fd(nextDl.due):"All done!",col:nextDl?gd(nextDl.due,st[nextDl?.id]).col:"var(--su)",ic2:"ti-calendar"},
+           {lb:"Overall",val:ov+"%",col:"var(--ac)",ic2:"ti-chart-bar"},
           ].map(s=>h("div",{key:s.lb,style:{background:"var(--bg1)",borderRadius:r,border:"1px solid var(--bd)",padding:"20px 22px"}},
             h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},
-              ic(s.ic,{fontSize:16,color:s.col}),
+              ic(s.ic2,{fontSize:16,color:s.col}),
               h("p",{style:{fontSize:13,color:"var(--t2)",margin:0}},s.lb)
             ),
             h("p",{style:{fontSize:28,fontWeight:500,color:s.col,margin:0,fontFamily:mo}},s.val)
           ))
         ),
-
-        // Books section
         h("div",{style:{marginBottom:24}},
           h("p",{style:{fontSize:12,color:"var(--t3)",fontFamily:mo,textTransform:"uppercase",letterSpacing:2,margin:"0 0 14px"}},"Books"),
           h("div",{style:{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:14}},
             Object.keys(BOOKS).map(id=>h(BookCard,{key:id,bookId:id}))
           )
         ),
-
-        // Current month
         h("div",{style:{background:"var(--bg1)",border:`1px solid ${cr.b}`,borderRadius:12,padding:26}},
           h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},
             h("p",{style:{fontSize:12,color:"var(--t3)",margin:0,textTransform:"uppercase",letterSpacing:1}},"Currently working on"),
@@ -520,22 +641,18 @@ function App(){
         )
       ),
 
-      // ── TASKS ──
+      // ─── TASKS ───
       tab==="tasks"&&h("div",{style:{display:"grid",gridTemplateColumns:"220px minmax(0,1fr)",gap:24}},
-        // Sidebar
         h("div",null,
-          // Status legend
-          h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:r,padding:"12px 14px",marginBottom:16,fontSize:12,color:"var(--t2)"}},
-            h("p",{style:{margin:"0 0 8px",fontSize:11,color:"var(--t3)",textTransform:"uppercase",letterSpacing:1}},"Click to cycle status"),
-            h("div",{style:{display:"flex",flexDirection:"column",gap:7}},
-              [{s:null,label:"Todo",border:"var(--bd2)",bg:"transparent",dot:null},
-               {s:"progress",label:"In progress",border:"var(--wa)",bg:"var(--wa-bg)",dot:h("div",{style:{width:10,height:3,background:"var(--wa)",borderRadius:2}})},
-               {s:"done",label:"Done",border:"var(--su)",bg:"var(--su)",dot:ic("ti-check",{fontSize:11,color:"#fff"})}
-              ].map(({s:_,label,border,bg,dot})=>h("div",{key:label,style:{display:"flex",alignItems:"center",gap:8}},
-                h("div",{style:{width:18,height:18,borderRadius:4,border:`1.5px solid ${border}`,background:bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},dot),
-                h("span",null,label)
-              ))
-            )
+          h("div",{style:{background:"var(--bg1)",border:"1px solid var(--bd)",borderRadius:r,padding:"12px 14px",marginBottom:16}},
+            h("p",{style:{fontSize:11,color:"var(--t3)",textTransform:"uppercase",letterSpacing:1,margin:"0 0 8px"}},"Click status icon to cycle"),
+            [{label:"Todo",border:"var(--bd2)",bg:"transparent",content:null},
+             {label:"In progress",border:"var(--wa)",bg:"var(--wa-bg)",content:h("div",{style:{width:10,height:3,background:"var(--wa)",borderRadius:2}})},
+             {label:"Done",border:"var(--su)",bg:"var(--su)",content:ic("ti-check",{fontSize:11,color:"#fff"})}
+            ].map(({label,border,bg,content})=>h("div",{key:label,style:{display:"flex",alignItems:"center",gap:8,marginBottom:6}},
+              h("div",{style:{width:18,height:18,borderRadius:4,border:`1.5px solid ${border}`,background:bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},content),
+              h("span",{style:{fontSize:13,color:"var(--t2)"}},label)
+            ))
           ),
           MO.map((mn,i)=>{
             const p=pct(mn.id,st);const c=RL[i];
@@ -553,18 +670,20 @@ function App(){
               h("div",{style:{fontSize:14,fontWeight:selM===i?500:400,color:selM===i?"var(--t1)":"var(--t2)",marginTop:3}},mn.title),
               h("div",{style:{fontSize:11,color:"var(--t3)",marginTop:2}},fr(mn.start,mn.end)),
               h("div",{style:{display:"flex",alignItems:"center",gap:6,marginTop:5}},
-                h("div",{style:{flex:1,height:4,background:"var(--bd2)",borderRadius:2,overflow:"hidden"}},h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:2}})),
+                h("div",{style:{flex:1,height:4,background:"var(--bd2)",borderRadius:2,overflow:"hidden"}},
+                  h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:2}})
+                ),
                 h("span",{style:{fontSize:10,color:"var(--t3)",fontFamily:mo,flexShrink:0}},`${done2}/${mn.tasks.length}`)
               )
             );
           })
         ),
-        // Task list
         (()=>{
           const mn=MO[selM];const p=pct(mn.id,st);const c=RL[selM];
           const done2=mn.tasks.filter(t=>st[t.id]==="done").length;
           const prog2=mn.tasks.filter(t=>st[t.id]==="progress").length;
           const late=mn.tasks.filter(t=>st[t.id]!=="done"&&gd(t.due,st[t.id]).lb.includes("late")).length;
+          const bookIds=[...new Set(mn.tasks.filter(t=>t.bookId).map(t=>t.bookId))];
           return h("div",null,
             h("div",{style:{marginBottom:18}},
               h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}},
@@ -574,9 +693,9 @@ function App(){
                   h("p",{style:{fontSize:14,color:"var(--t2)",margin:"4px 0 0"}},mn.goal)
                 ),
                 h("div",{style:{textAlign:"right",flexShrink:0}},
-                  h("div",{style:{display:"flex",gap:12,justifyContent:"flex-end",flexWrap:"wrap"}},
-                    h("span",{style:{fontSize:14,color:"var(--su)",fontFamily:mo}},ic("ti-circle-check",{fontSize:14,marginRight:4}),done2+" done"),
-                    prog2>0&&h("span",{style:{fontSize:14,color:"var(--wa)",fontFamily:mo}},ic("ti-clock-play",{fontSize:14,marginRight:4}),prog2+" in progress"),
+                  h("div",{style:{display:"flex",gap:12,justifyContent:"flex-end"}},
+                    h("span",{style:{fontSize:14,color:"var(--su)",fontFamily:mo}},done2+" done"),
+                    prog2>0&&h("span",{style:{fontSize:14,color:"var(--wa)",fontFamily:mo}},prog2+" in progress"),
                     late>0&&h("span",{style:{fontSize:14,color:"var(--da)",fontFamily:mo}},late+" overdue")
                   )
                 )
@@ -585,14 +704,9 @@ function App(){
                 h("div",{style:{width:`${p}%`,height:"100%",background:c.t,borderRadius:4}})
               )
             ),
-            // Book cards for this month
-            (() => {
-              const bookIds=[...new Set(mn.tasks.filter(t=>t.bookId).map(t=>t.bookId))];
-              if(!bookIds.length)return null;
-              return h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12,marginBottom:18}},
-                bookIds.map(id=>h(BookCard,{key:id,bookId:id,compact:true}))
-              );
-            })(),
+            bookIds.length>0&&h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12,marginBottom:18}},
+              bookIds.map(id=>h(BookCard,{key:id,bookId:id,compact:true}))
+            ),
             h("div",{style:{marginBottom:18}},
               mn.tasks.map(task=>{
                 const status=st[task.id];const ds=gd(task.due,status);
@@ -622,7 +736,7 @@ function App(){
         })()
       ),
 
-      // ── QUIZ ──
+      // ─── QUIZ ───
       tab==="quiz"&&h("div",null,
         !apiKey&&noKeyBanner,
         apiKey&&h("div",null,
@@ -648,14 +762,12 @@ function App(){
                   let bg="var(--bg2)",border="var(--bd)",col="var(--t1)";
                   if(quiz.rev){if(k===quiz.correct){bg="var(--su-bg)";border="var(--su-bd)";col="var(--su)";}else if(k===quiz.sel){bg="var(--da-bg)";border="var(--da-bd)";col="var(--da)";}}
                   return h("button",{key:k,onClick:()=>ans(k),disabled:quiz.rev,style:{padding:"14px 18px",background:bg,border:`1px solid ${border}`,borderRadius:r,color:col,fontSize:15,cursor:quiz.rev?"default":"pointer",textAlign:"left",fontFamily:fn}},
-                    h("span",{style:{fontFamily:mo,fontWeight:500,marginRight:10}},k.toUpperCase()+"."),v
-                  );
+                    h("span",{style:{fontFamily:mo,fontWeight:500,marginRight:10}},k.toUpperCase()+"."),v);
                 })
               ),
               quiz.rev&&h("div",null,
                 h("div",{style:{marginTop:16,padding:"14px 18px",background:"var(--bg2)",border:"1px solid var(--bd)",borderRadius:r,fontSize:15,color:"var(--t2)",lineHeight:1.7}},
-                  h("span",{style:{color:"var(--su)",fontWeight:500}},"Explanation: "),quiz.explanation
-                ),
+                  h("span",{style:{color:"var(--su)",fontWeight:500}},"Explanation: "),quiz.explanation),
                 h("button",{className:"pb",style:{marginTop:14},onClick:()=>startQ(quiz.topic,quiz.mi)},"Next question")
               )
             )
@@ -671,7 +783,7 @@ function App(){
         )
       ),
 
-      // ── MENTOR ──
+      // ─── MENTOR ───
       tab==="mentor"&&h("div",null,
         !apiKey&&noKeyBanner,
         apiKey&&h("div",null,
