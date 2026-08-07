@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "lastUpdated": "2026-08-07T10:02:56.777Z",
+  "lastUpdated": "2026-08-07T10:06:24.151Z",
   "taskStatus": {
     "1-1": "done",
     "1-2": "done",
     "1-3": "done",
-    "1-4": "progress",
+    "1-4": "done",
     "1-5": "progress"
   },
   "bookProgress": {
